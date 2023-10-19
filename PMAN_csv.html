@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMAN CSV Runner</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        label:after {
+            content: ":";
+        }
+
+        body,
+        form,
+        #demobox {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+        }
+        .active{
+            color:green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="csvInput">
+    <table>
+        <thead>
+            <th>URL</th>
+            <th>Data</th>
+        </thead>
+    <tbody id="output"></tbody>
+    </table>
+    <button onclick=runCommands()>Run</button>
+    <script>
+        // process CSV
+        let pman_list = [];
+        document.getElementById('csvInput').addEventListener('change', function (e) {
+            pman_list = []
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = function (event) {
+                const csv = event.target.result;
+                const data = csv.split('\n').map(row => row.split(','));
+                data.forEach(row => {
+                    let port = row[0]
+                    let endpoint = row[1]
+                    let args = row.slice(2,)
+
+                    let url = `http://localhost:${port}/pman/${endpoint}`
+                    let data = `{"args":[${args}]}`
+                    let obj_id = randstr(12)
+                    pman_list = [...pman_list, [obj_id,url,data]]
+                });
+                let html = renderOutput(pman_list)
+                document.getElementById('output').innerHTML = html;
+            };
+
+            reader.onerror = function () {
+                alert('Error reading the file');
+            };
+        });
+    </script>
+    <script>
+        function renderOutput(pman_list){
+            let output = ''
+            pman_list.forEach(row => {
+                let row_obj = `<tr id="${row[0]}"><td>${row[1]}</td><td>${row[2]}</td></tr>`
+                output += row_obj
+            })
+            return output
+        }
+        function pmanPost(url, data) {
+            return fetch(url, {
+                "method": "post",
+                "body": data
+            })
+        }
+        async function runCommands(){
+            for (let row of pman_list){
+                let row_id = row[0]
+                let url = row[1]
+                let data = row[2]
+                setActiveRow(row_id)
+                await pmanPost(url,data)
+            }
+        }
+        function setActiveRow(row_id){
+            let rows = document.querySelectorAll('tbody>tr')
+            rows.forEach(row => row.classList="")
+            document.getElementById(row_id).classList="active"
+        }
+        function randstr(n=8){
+            const lowers='abcdefghijklmnopqrstuvwxyz'
+            const uppers='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            const digits='0123456789'
+            const options = lowers + uppers + digits
+            let s = ''
+            for(let i=0;i<n;i++){
+                let index = Math.floor(options.length * Math.random())
+                s = s + options[index]
+            }
+            return s
+        }
+    </script>
+</body>
+
+</html>
