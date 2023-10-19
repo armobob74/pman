@@ -132,3 +132,36 @@ The standard endpoints are:
     - `/pman/` -- must respond to a GET request. Used by runner to check to see if a server is running.
 
 Most PMAN endpoints will accept a request, start an action, and return a response when the action is complete.
+
+## PMAN Runner Config
+PMAN runners can make use of configuration files to abstract away technical details of PMAN setups. An example config is shown below:
+```json
+{
+    "instruments": {
+        "SmartStageXY": [
+            {
+                "network-port": 5001
+            }
+        ],
+        "SPM": [
+            {
+                "network-port": 5000,
+                "valve-map": {
+                    "1":"air",
+                    "2":"dihydrogen monoxide",
+                    "12":"waste"
+                }
+            },
+            {
+                "network-port": 5003,
+                "valve-map": {
+                    "1":"air",
+                    "2":"Toluene",
+                    "12":"waste"
+                }
+            }
+        ]
+    }
+}
+```
+This config describes a setup with two SPM pumps and one SmartStageXY. The SPM servers are running on localhost:5000 and localhost:5003, while the SmartStageXY is running on localhost:5001. The SPMs are configured with valve maps to tell the runner where various liquids are.
