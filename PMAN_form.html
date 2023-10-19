@@ -11,21 +11,29 @@
         label:after{
             content:":";
         }
-        body,form {
+        body,form,#demobox {
             display: flex;
             flex-direction: column;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
         }
-        form {
+        form, #demobox {
             max-width: 200px;
         }
         label,button {
             margin-top:0.5em;
         }
+        #demobox{
+
+        }
 
     </style>
 </head>
 <body>
+    <div id="demobox">
+        <button type="button" onclick=fillFormTransfer()>Show Transfer</button>
+        <button type="button" onclick=fillFormPlateMove()>Show Plate Move</button>
+
+    </div>
     <form> 
         <label for="port">Port</label>
         <input type="number" name="port" id="port" value="5001">
@@ -84,5 +92,6 @@
         }
         transpile()
     </script>
+    <script src="demos.js"></script>
 </body>
 </html>
