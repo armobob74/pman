@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMAN Form</title>
+    <style>
+        *{
+            box-sizing:border-box;
+        }
+        label:after{
+            content:":";
+        }
+        body,form {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+        }
+        form {
+            max-width: 200px;
+        }
+        label,button {
+            margin-top:0.5em;
+        }
+
+    </style>
+</head>
+<body>
+    <form> 
+        <label for="port">Port</label>
+        <input type="number" name="port" id="port" value="5001">
+
+        <label for="endpoint">Endpoint</label>
+        <select id="endpoint" name="endpoint">
+            <option>move-to-well</option>
+            <option>transfer</option>
+        </select>
+
+        <label for="arg1">Arg 1</label>
+        <input type="text" name="arg1" id="arg1" value="0" class="arg">
+
+        <label for="arg2">Arg 2</label>
+        <input type="text" name="arg2" id="arg2" value="0" class="arg">
+
+        <label for="arg3">Arg 3</label>
+        <input type="text" name="arg3" id="arg3" value="" class="arg">
+        <button type="button" onclick=pmanPost()>Submit</button>
+    </form>
+    <strong>url: </strong><code id="urlbox"></code>
+    <strong>data: </strong><code id="databox"></code>
+    <script>
+        let args = document.querySelectorAll("input.arg")
+        function makeUrl(){
+            let url = `http://localhost:${port.value}/pman/${endpoint.value}`
+            return url
+        }
+        function makeData(){
+            let argvals = []
+            args.forEach(arg => {
+                if (arg.value !== ""){
+                argvals = [...argvals, arg.value];
+                }
+            }
+            )
+            let data = `{"args":[${argvals}]}`
+            return data
+        }
+        function transpile(){
+            urlbox.innerText=makeUrl();
+            databox.innerText=makeData();
+        }
+        document.querySelectorAll('input').forEach(item => 
+            item.addEventListener(
+                'input',transpile
+                )
+        )
+        function pmanPost(){
+            let url = makeUrl();
+            let data = makeData();
+            fetch(url,{
+                "method":"post",
+                "body":data
+            }).then(resp => console.log(resp))
+        }
+        transpile()
+    </script>
+</body>
+</html>
