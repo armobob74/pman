@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Parser</title>
+    <style>
+        body{
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+        }
+        .active{
+            color:green;
+            font-weight: bold;
+        }
+        button{
+            max-width: 30%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <input type="file" id="csvFile" onchange="handleFile()">
+    <table>
+    <tbody id="output">
+    </tbody>
+    </table>
+    <button onclick=runCommands()>run</button>
+
+    <script>
+        const config = {
+            "instruments": {
+                "SmartStageXY": [
+                    {
+                        "network-port": 5001
+                    }
+                ],
+                "SPM": [
+                    {
+                        "network-port": 5000,
+                        "valve-map": {
+                            "1": "air",
+                            "2": "water",
+                            "3": "dispense",
+                            "12": "waste"
+                        }
+                    },
+                    {
+                        "network-port": 5003,
+                        "valve-map": {
+                            "1": "oil",
+                            "2": "toluene",
+                            "4": "dispense",
+                            "12": "waste"
+                        }
+                    }
+                ]
+            }
+        };
+
+        function extractInfo(row) {
+            const target_chemical = row[0]
+            for (const instrument of config.instruments.SPM) {
+                let dispenseValve;
+                let chemicalValve;
+                for (const [valve, substance] of Object.entries(instrument["valve-map"])) {
+                    if (substance === "dispense") {
+                        dispenseValve = Number(valve);
+                    }
+                    if (substance === target_chemical) {
+                        chemicalValve = Number(valve);
+                    }
+                }
+                // If we found both valves, return the information
+                if (dispenseValve && chemicalValve) {
+                    return {
+                        'spm-port': instrument["network-port"],
+                        'xy-port': config.instruments.SmartStageXY[0]["network-port"],
+                        'from-valve': chemicalValve,
+                        'to-valve': dispenseValve,
+                        'volume':row[1].trim(),
+                        'well-x': row[2].trim(), 
+                        'well-y': row[3].trim(), 
+                        'speed': row[4].trim() 
+                    };
+                }
+            }
+            return null;
+        }
+
+        let request_id = 0
+        function compileRequests(info){
+            //ignore speed for now
+            let move_request = `http://localhost:${info['xy-port']}/pman/move-to-well`
+            let move_data = `{"args":[${info['well-x']},${info['well-y']}]}`
+            let transfer_request = `http://localhost:${info['spm-port']}/pman/transfer`
+            let transfer_data = `{"args":[${info['from-valve']},${info['to-valve']},${info['volume']}]}`
+            request_id += 2
+            return [
+                {'id':request_id-1,'url':move_request,'data':move_data},
+                {'id':request_id,'url':transfer_request,'data':transfer_data},
+            ]
+        }
+
+        function pmanPost(url, data) {
+            return fetch(url, {
+                "method": "post",
+                "body": data
+            })
+        }
+        async function runCommands(){
+            for (let request of all_requests){
+                setActiveRow(request.id)
+                await pmanPost(request.url,request.data)
+            }
+        }
+        function setActiveRow(row_id){
+            let rows = document.querySelectorAll('tr')
+            rows.forEach(row => row.classList="")
+            document.getElementById(`request-${row_id}`).classList="active"
+        }
+
+        let all_requests = []
+        function handleFile() {
+            const file = document.getElementById('csvFile').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const content = event.target.result;
+                const rows = content.trim().split("\n");
+
+                for (const whole_row of rows) {
+                    const row = whole_row.trim().split(",");
+                    const info = extractInfo(row);
+                    let requests = compileRequests(info)
+                    all_requests = [...all_requests, requests[0], requests[1]]
+                }
+
+            let displayHTML = ''
+            for(request of all_requests){
+                    console.log(request)
+                displayHTML += `<tr id="request-${request.id}"><td>${request.url}</td><td>${request.data}</td></tr>`
+            }
+            output.innerHTML = displayHTML;
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+
+</html>
