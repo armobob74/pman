@@ -119,6 +119,7 @@ All PMAN endpoints begin with `/pman`. This makes them easy to find and identify
 For a Flask API implementation, it is recommended to put PMAN endpoints in their own Blueprint.
 The standard endpoints are:
 - `/pman/` -- must respond to a GET request. Used by runner to check to see if a server is running.
+- `/pman/hardstop` -- must respond to any type of request. Tells the instrument to immediately stop what it is doing.
 
 
 ## PMAN Runner Config
