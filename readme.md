@@ -205,7 +205,7 @@ def transfer(from_port, to_port, volume):
 
 <!-- TOC --><a name="serial-communication"></a>
 ### Serial Communication
-Serial communication can be handled by the `pyserial` library. Serial communication is a process of transmitting data between a computer and peripheral devices sequentially, bit by bit, often utilized in lab automation. Because there's only one connection, it's advisable to set it as app.connection and then have all PMAN endpoints interact with the machine through app.connection. When designing app.connection, be sure to provide an easy way to interrupt the connection and provide a hardstop command to the machine. This should be done as app.connection.hardstop(). An example is shown below:
+Serial communication can be handled by the `pyserial` library. Serial communication involves transmitting data between a computer and peripheral devices sequentially, bit by bit. Because there's only one connection, it's advisable to set it as a singleton `app.connection` and manage all requests through this one instance. When designing `app.connection`, be sure to provide an easy way to interrupt the connection and provide a hardstop command to the machine. This should be done as `app.connection.hardstop()`. A good way to do this is to use a `Lock` and an `interrupt_flag`. An example is shown below:
 ```python
 from flask import Flask
 import serial
