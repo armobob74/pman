@@ -209,6 +209,7 @@ Serial communication can be handled by the `pyserial` library. Serial communicat
 ```python
 from flask import Flask
 import serial
+from threading import Lock
 class Connection:
     def __init__(self, serial_port="/dev/ttyUSB0", baud_rate=9600):
         """
