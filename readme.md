@@ -10,6 +10,7 @@
 - [PMAN Runner Config](#pman-runner-config)
 - [Flask tips](#flask-pman)
    * [Argument Parsing](#argument-parsing)
+   * [Serial Communication](#serial-communication)
 
 <!-- TOC end -->
 
@@ -202,7 +203,7 @@ def transfer(from_port, to_port, volume):
     return {'status':'ok','message':message}
 ```
 
-<!-- TOC --><a name="argument-parsing"></a>
+<!-- TOC --><a name="serial-communication"></a>
 ### Serial Communication
 Serial communication can be handled by the `pyserial` library. Serial communication is a process of transmitting data between a computer and peripheral devices sequentially, bit by bit, often utilized in lab automation. Because there's only one connection, it's advisable to set it as app.connection and then have all PMAN endpoints interact with the machine through app.connection. When designing app.connection, be sure to provide an easy way to interrupt the connection and provide a hardstop command to the machine. This should be done as app.connection.hardstop(). An example is shown below:
 ```python
