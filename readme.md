@@ -239,7 +239,7 @@ class Connection:
                 raise InterruptedError("Operation Interrupted")
             self.serial.send(command.encode())
             response = self.serial.read_until(read_until_char.encode())
-        return self.parseResponse(response)
+        return self.parse_response(response)
 
     def parse_response(self, response):
         """
