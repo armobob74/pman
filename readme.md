@@ -1,7 +1,7 @@
-# Runner
 ## Table of Contents
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
+[Runner](#runner)
 - [Intro](#intro)
 - [Custom CSVs](#custom-csvs)
 - [Persist Modular Automation Network (PMAN) API](#persist-modular-automation-network-pman-api)
@@ -16,6 +16,7 @@
 <!-- TOC end -->
 
 
+# Runner
 <!-- TOC --><a name="intro"></a>
 ## Intro
 The primary purpose of the runner is to operate in CSV mode. An example of the universal PMAN csv structure is shown below:
