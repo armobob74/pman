@@ -11,6 +11,7 @@
 - [Flask tips](#flask-pman)
    * [Argument Parsing](#argument-parsing)
    * [Serial Communication](#serial-communication)
+   * [Logging](#logging)
 
 <!-- TOC end -->
 
@@ -257,6 +258,7 @@ def create_app():
     app.connection = Connection()
 app = create_app()
 ```
+<!-- TOC --><a name="logging"></a>
 ### Logging
 Flask uses Python's standard logging system. You are encouraged to check out [logging.md](docs/logging.md) for a quick overview of how that works. Flask's default logger is stored at `app.logger`, and for most purposes it's not necessary to replace it. Here's an example of how you may add custom handlers to this logger:
 ```python
