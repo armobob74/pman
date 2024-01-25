@@ -1,14 +1,16 @@
 ## Table of Contents
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-[Runner](#runner)
+- [*Runner*](#runner)
+<hr>
 - [Intro](#intro)
 - [Custom CSVs](#custom-csvs)
 - [Persist Modular Automation Network (PMAN) API](#persist-modular-automation-network-pman-api)
    * [Overview](#overview)
    * [PMAN Endpoints](#pman-endpoints)
 - [PMAN Runner Config](#pman-runner-config)
-[Server](#server)
+- [*Server*](#server)
+<hr>
 - [Flask tips](#flask-pman)
    * [Argument Parsing](#argument-parsing)
    * [Serial Communication](#serial-communication)
