@@ -1,27 +1,26 @@
-## Table of Contents
+# PMAN
+
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-- [*Runner*](#runner)
-<hr/>
 - [Intro](#intro)
 - [Custom CSVs](#custom-csvs)
 - [Persist Modular Automation Network (PMAN) API](#persist-modular-automation-network-pman-api)
-   * [Overview](#overview)
-   * [PMAN Endpoints](#pman-endpoints)
+  - [Overview](#overview)
+  - [PMAN Endpoints](#pman-endpoints)
 - [PMAN Runner Config](#pman-runner-config)
-- [*Server*](#server)
-- [Flask tips](#flask-pman)
-   * [Argument Parsing](#argument-parsing)
-   * [Serial Communication](#serial-communication)
-   * [Logging](#logging)
+- [Server](#flask-pman)
+  - [Argument Parsing](#argument-parsing)
+  - [Serial Communication](#serial-communication)
+  - [Logging](#logging)
 
 <!-- TOC end -->
 
-
-# Runner
 <!-- TOC --><a name="intro"></a>
+
 ## Intro
+
 The primary purpose of the runner is to operate in CSV mode. An example of the universal PMAN csv structure is shown below:
+
 <table>
     <thead>
         <th>Port</th>
@@ -56,24 +55,27 @@ The primary purpose of the runner is to operate in CSV mode. An example of the u
 </table>
 
 This can be transpiled into requests to be sent to the various components connected to the runner. The columns are described as follows:
- - The `Port` column tells the runner what the address of the desired instrument's server is. 
- - The `Endpoint` column tells the runner what endpoint to send its request to
- - The `Arg` columns tell the runner what arguments to include in its request
+
+- The `Port` column tells the runner what the address of the desired instrument's server is.
+- The `Endpoint` column tells the runner what endpoint to send its request to
+- The `Arg` columns tell the runner what arguments to include in its request
 
 The first line of the CSV above would be transpiled into something like this:
+
 ```javascript
-    fetch('http://localhost:5000/pman/move', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(
-                {'args':["0","0"]}
-            )
-    });
+fetch("http://localhost:5000/pman/move", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ args: ["0", "0"] }),
+});
 ```
 
 <!-- TOC --><a name="custom-csvs"></a>
+
 ## Custom CSVs
+
 If desired, runners can define their own custom CSV structures that depend on setup configuration variables. For a setup with an SPM and a SmartStageXY, a custom CSV may look like this:
+
 <table>
     <thead>
         <th>Liquid</th>
@@ -108,85 +110,104 @@ If desired, runners can define their own custom CSV structures that depend on se
 </table>
 
 The runner would use its configuration to map that CSV to PMAN API calls, abstracting away much complexity.
+
 <!-- TOC --><a name="persist-modular-automation-network-pman-api"></a>
+
 ## Persist Modular Automation Network (PMAN) API
+
 <!-- TOC --><a name="overview"></a>
+
 ### Overview
+
 PMAN provides a standardized way for Automation Modules to talk to each other. A PMAN request is a post request with a body component that looks like this:
+
 ```json
 {
-    "args":[
-        "arg1",
-        "arg2",
-        "etc"
-    ],
+  "args": ["arg1", "arg2", "etc"]
 }
 ```
+
 This structure exists so that it's easy for the front-end to turn a CSV row into an API call.
 
 The standard response looks like this:
+
 ```json
 {
-    "status":"No Error",
-    "message":"Have a nice day"
+  "status": "No Error",
+  "message": "Have a nice day"
 }
 ```
+
 The `status` field is not for the HTTP status, it's for communicating whether anything is wrong with the instrument.
 The `message` field is for any information that the instrument may wish to commuicate to the operator -- things like "initiating transfer from port 0 to port 3". This structure is so that it's easy to display something like this to the user in an embedded terminal:
+
 ```
 localhost:5000 -- No Error -- initiating transfer from port 0 to port 3
 ```
+
 <!-- TOC --><a name="pman-endpoints"></a>
+
 ### PMAN Endpoints
+
 Most PMAN endpoints will accept a request, start an action, and return a response when the action is complete.
 
 All PMAN endpoints begin with `/pman`. This makes them easy to find and identify.
 For a Flask API implementation, it is recommended to put PMAN endpoints in their own Blueprint.
 The standard endpoints are:
+
 - `/pman/` -- must respond to a GET request. Used by runner to check to see if a server is running.
 - `/pman/hardstop` -- must respond to any type of request. Tells the instrument to immediately stop what it is doing.
 
-
 <!-- TOC --><a name="pman-runner-config"></a>
+
 ## PMAN Runner Config
+
 PMAN runners can make use of configuration files to abstract away technical details of PMAN setups. An example config is shown below:
+
 ```json
 {
-    "instruments": {
-        "SmartStageXY": [
-            {
-                "network-port": 5001
-            }
-        ],
-        "SPM": [
-            {
-                "network-port": 5000,
-                "valve-map": {
-                    "1":"air",
-                    "2":"dihydrogen monoxide",
-                    "12":"waste"
-                }
-            },
-            {
-                "network-port": 5003,
-                "valve-map": {
-                    "1":"air",
-                    "2":"Toluene",
-                    "12":"waste"
-                }
-            }
-        ]
-    }
+  "instruments": {
+    "SmartStageXY": [
+      {
+        "network-port": 5001
+      }
+    ],
+    "SPM": [
+      {
+        "network-port": 5000,
+        "valve-map": {
+          "1": "air",
+          "2": "dihydrogen monoxide",
+          "12": "waste"
+        }
+      },
+      {
+        "network-port": 5003,
+        "valve-map": {
+          "1": "air",
+          "2": "Toluene",
+          "12": "waste"
+        }
+      }
+    ]
+  }
 }
 ```
+
 This config describes a setup with two SPM pumps and one SmartStageXY. The SPM servers are running on localhost:5000 and localhost:5003, while the SmartStageXY is running on localhost:5001. The SPMs are configured with valve maps to tell the runner where various liquids are.
 
 <!-- TOC --><a name="flask-pman"></a>
-## Flask tips
+
+## Server
+
 There are many ways to implement a server that can accept PMAN requests. The most popular way right now is to use Python's `Flask` library. Common themes include argument parsing, serial communication, and UI design.
+
 <!-- TOC --><a name="argument-parsing"></a>
+
 ### Argument Parsing
+
 For ease of use with spreadsheets, the arguments of PMAN requests are sent in a list. The server must know the order to expect the arguments, and then assign them to variables. It's recommended to use a decorator to simplify this process:
+
 ```python
 def extract_pman_args(f):
     """
@@ -208,8 +229,11 @@ def transfer(from_port, to_port, volume):
 ```
 
 <!-- TOC --><a name="serial-communication"></a>
+
 ### Serial Communication
+
 Serial communication can be handled by the `pyserial` library. Serial communication involves transmitting data between a computer and peripheral devices sequentially, bit by bit. Because there's only one connection, it's advisable to set it as a singleton `app.connection` and manage all requests through this one instance. When designing `app.connection`, be sure to provide an easy way to interrupt the connection and provide a hardstop command to the machine. This should be done as `app.connection.hardstop()`. A good way to do this is to use a `Lock` and an `interrupt_flag`. An example is shown below:
+
 ```python
 from flask import Flask
 import serial
@@ -254,16 +278,20 @@ class Connection:
 
     def reset_interrupt(self):
         self.interrupt_flag = False
-        
+
 
 def create_app():
     app = Flask(__app__)
     app.connection = Connection()
 app = create_app()
 ```
+
 <!-- TOC --><a name="logging"></a>
+
 ### Logging
+
 Flask uses Python's standard logging system. You are encouraged to check out [logging.md](docs/logging.md) for a quick overview of how that works. Flask's default logger is stored at `app.logger`, and for most purposes it's not necessary to replace it. Here's an example of how you may add custom handlers to this logger:
+
 ```python
 import logging
 import os
