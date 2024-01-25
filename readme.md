@@ -324,3 +324,24 @@ def create_app():
         app.logger.addHandler(handler)
     #...[the rest of your app factory here]...#
 ```
+
+You can use this in your `PMAN` blueprint like so:
+```python
+# ... rest of import section ... #
+from flask import current_app
+# ... rest of blueprint code ... #
+@pman.route('/some-endpoint',methods=["POST"])
+@extract_pman_args
+def myFunc(arg1, arg2):
+    current_app.debug("Recieved POST request at '/pman/some-endpoint'")
+    try:
+        do_something(arg1, arg2)
+        message = "Performed action successfully"
+        status = 'ok'
+        current_app.logger.info(message)
+    except Exception as e:
+        message = f"Failed to perform action: {str(e)}"
+        status = 'error'
+        current_app.logger.error(message)
+    return {'status':status, 'message':message}
+```
