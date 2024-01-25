@@ -8,6 +8,7 @@
    * [Overview](#overview)
    * [PMAN Endpoints](#pman-endpoints)
 - [PMAN Runner Config](#pman-runner-config)
+[Server](#server)
 - [Flask tips](#flask-pman)
    * [Argument Parsing](#argument-parsing)
    * [Serial Communication](#serial-communication)
