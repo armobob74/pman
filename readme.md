@@ -320,6 +320,7 @@ def create_handlers():
 
 def create_app():
     app = Flask(__name__)
+    app.logger.setLevel(logging.DEBUG) # so that your debug things are actually shown
     for handler in create_handlers():
         app.logger.addHandler(handler)
     #...[the rest of your app factory here]...#
