@@ -1,0 +1,51 @@
+{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+<h2>Settings</h2>
+<form>
+  <label for="speedcode">speedcode 1-40, smaller is faster</label>
+  <input
+    type="text"
+    name="speedcode"
+    id="speedcode"
+    max="40"
+    min="1"
+    value=""
+  />
+  <button class="execute" type="button" onclick="saveSettings()">Save</button>
+</form>
+{% endblock %} {% block scripts %}
+<script>
+  enforceCharset("speedcode", "01234567890");
+  enforceRange("speedcode", 1, 40);
+
+  let settings = JSON.parse(localStorage.getItem("settings")) || {};
+  for (const key in settings) {
+    document.getElementById(key).value = settings[key];
+  }
+
+  for (const inpt of document.querySelectorAll("form input")) {
+    inpt.addEventListener("input", () => {
+      inpt.classList.add("unsaved-change");
+    });
+  }
+
+  function saveSettings() {
+    let inputs = document.querySelectorAll("form input");
+    for (input of inputs) {
+      if (input.value !== "") {
+        settings[input.id] = input.value;
+      }
+    }
+    localStorage.setItem("settings", JSON.stringify(settings));
+    sendSettings();
+    for (const inpt of document.querySelectorAll("form input")) {
+      inpt.addEventListener("input", () => {
+        inpt.classList.remove("unsaved-change");
+      });
+    }
+  }
+
+  async function sendSettings(){
+	  await oneResponseCommand(`S${speedcode.value}R`)
+  }
+</script>
+{% endblock%}

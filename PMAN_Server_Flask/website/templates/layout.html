@@ -1,0 +1,38 @@
+{% from "macros.html" import sidecard %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hamilton Pump Interface</title>
+    <link
+      href="{{url_for('static',filename='css/base_style.css')}}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="sidebar">
+      {{ sidecard("Query", "/")}} {{ sidecard("Settings", "/settings")}} {{
+      sidecard("Control", "/control")}}
+      {{ sidecard("Transfer", "/transfer")}} {{ sidecard("Mix", "/mix")}}
+    </div>
+    <div class="main">
+      <div class="content-container" id="content-container">
+        {% block content %} {% endblock %}
+      </div>
+      <div class="response-container" id="response-container"></div>
+    </div>
+    <script src="/static/javascript/confirm_ranges.js"></script>
+    <script src="/static/javascript/fetches.js"></script>
+    <script>
+      let sidecards = document.querySelectorAll(".sidecard");
+      for (const sidecard of sidecards) {
+        if (window.location.href === sidecard.href) {
+          sidecard.classList.add("active");
+        }
+      }
+    </script>
+    {% block scripts %} {% endblock %}
+  </body>
+</html>

@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block head%}
+<style>
+.q_grid{
+	display: grid;
+}
+
+</style>
+{% endblock %}
+{% block content%}
+<h2>PMAN Template</h2>
+<div class="q_grid">
+  <button type="button">This</button>
+  <button type="button">is</button>
+  <button type="button">a</button>
+  <button type="button">q</button>
+  <button type="button">grid</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  async function displayBufferStatus(){
+    if(await bufferIsEmpty()){
+      display("buffer empty")
+    } else {
+      display("buffer not empty")
+    }
+  }
+</script>
+{% endblock %}

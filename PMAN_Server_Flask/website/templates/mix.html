@@ -1,0 +1,53 @@
+{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+<h2>Mix</h2>
+<form>
+  <label for="to_port">To Port</label>
+  <input type="text" name="to_port" id="to_port" value="" />
+  <div
+    id="from_port_container"
+    style="display: flex; flex-direction: column; gap: 0.5em"
+  ></div>
+  <button type="button" style="width: 4em" onclick="addFromPort()">+</button>
+  <button type="button" class="execute" onclick="commandMix()">Mix</button>
+</form>
+{% endblock %} {% block scripts %}
+<script>
+  enforceCharset(`to_port`, digits);
+  enforceRange(`to_port`, 1, 8);
+  function from_port(idnum) {
+    return `
+  <div style="display:flex; gap:1em;" class="from_port">
+  <label for="from_port_${idnum}">From Port</label>
+  <input type="text" name="from_port_${idnum}" id="from_port_${idnum}"  class="portnum" value="" />
+  <label for="volume_${idnum}">Volume (mL)</label>
+  <input type="text" name="volume_${idnum}" id="volume_${idnum}" class="volume" value="" />
+  </div>
+  `;
+  }
+
+  let from_port_idnum = 0;
+
+  function addFromPort() {
+    from_port_container.innerHTML += from_port(from_port_idnum);
+    from_port_idnum += 1;
+    for (let i=0; i<from_port_idnum;i++) {
+      enforceCharset(`from_port_${i}`, digits);
+      enforceRange(`from_port_${i}`, 1, 8);
+    }
+  }
+  addFromPort();
+
+  async function commandMix() {
+    if (!requireFormFilled()) {
+      let second_response = "";
+      let from_ports = document.querySelectorAll(".from_port");
+      for (const from_port of from_ports) {
+        let from_portnum = from_port.querySelector(".portnum").value;
+        let volume = from_port.querySelector(".volume").value;
+        let to_portnum = to_port.value;
+        second_response = await transfer(from_portnum, to_portnum, volume);
+      }
+    }
+  }
+</script>
+{% endblock%}

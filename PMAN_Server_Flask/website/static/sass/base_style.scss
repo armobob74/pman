@@ -1,0 +1,208 @@
+$txt-color-1: black;
+$highlight-color: darkorange;
+$sidecard-bg-color: white;
+$secondary-btn-color: gray;
+$accent-color-1: rgb(165, 3, 252); //good for button bg
+$primary-btn-bg-color: $accent-color-1;
+$button-transition-time: 0.15s;
+$border-color: $secondary-btn-color;
+$sidebar-bg-color: white;
+$form-bg-color: $sidecard-bg-color;
+$input-bg-color: hsl(0, 0, 60%);
+
+$error-color: rgb(217, 76, 83);
+$warning-color: rgb(237, 229, 71);
+
+$window-border: dotted 1px $border-color;
+
+* {
+  box-sizing: border-box;
+}
+
+svg {
+  width: 1em;
+  height: 1em;
+  stroke-width: 5;
+  fill: $sidebar-bg-color;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+  resize: horizontal;
+  overflow: auto;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 25vw;
+  height: 100vh;
+  background-color: $sidebar-bg-color;
+  border-right: $window-border;
+
+  .sidecard {
+    text-decoration: none;
+    color: $txt-color-1;
+    padding-left: 30px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3em;
+  }
+  .sidecard:hover,
+  .sidecard.active {
+    cursor: pointer;
+    background-color: darken($sidebar-bg-color, 10%);
+    svg {
+      fill: black;
+    }
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  flex-grow: 1;
+
+  .content-container {
+    background-color: $form-bg-color;
+    height: 60%;
+    display: flex;
+    overflow: auto;
+    resize: vertical;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    form {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      gap: 10px;
+      _max-width: 50%;
+      input {
+        max-width: 200px;
+        border-radius: 0.3em;
+      }
+      input:not(.error) {
+        border: solid 1px $input-bg-color;
+      }
+    }
+    .vol-from-port {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 0.5em;
+      gap: 10px;
+    }
+  }
+  .response-container {
+    scroll-behavior: smooth;
+    display: flex;
+    flex-grow: 1;
+    gap: 0.5em;
+    flex-direction: column;
+    padding: 10px;
+    border-top: $window-border;
+    overflow: auto;
+    .error {
+      color: $error-color;
+    }
+  }
+}
+
+button {
+  cursor: pointer;
+  background-color: $form-bg-color;
+  border: solid 2px $secondary-btn-color;
+  color: $secondary-btn-color;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  transition: $button-transition-time all;
+}
+
+button.error,
+button.warning {
+  color: white;
+  border: none;
+}
+
+button.error {
+  background-color: $error-color;
+}
+button.error:hover {
+  background-color: darken($error-color, 10%);
+}
+
+button.warning {
+  color: black;
+  background-color: $warning-color;
+}
+button.warning:hover {
+  color: black;
+  background-color: darken($warning-color, 20%);
+}
+
+button.save {
+  background-color: $primary-btn-bg-color;
+  border-color: $primary-btn-bg-color;
+  color: $txt-color-1;
+  width: 50%;
+}
+
+button:hover {
+  background-color: $primary-btn-bg-color;
+  border-color: $primary-btn-bg-color;
+  color: white;
+}
+
+button.add-btn {
+  width: 4em;
+}
+
+button.execute {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: white;
+  &:not(:hover) {
+    background-color: $primary-btn-bg-color;
+    border-color: $primary-btn-bg-color;
+  }
+}
+
+div.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#config-form {
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+select {
+  background-color: $form-bg-color;
+  border: solid 1px $input-bg-color;
+  border-radius: 0.3em;
+}
+select:hover:not(:disabled) {
+  background-color: darken($form-bg-color, 10%);
+}
+
+select.error {
+  border: solid 1px red;
+}
+input.error {
+  border: solid 1px red;
+}
+
+.unsaved-change {
+  color: $highlight-color;
+}

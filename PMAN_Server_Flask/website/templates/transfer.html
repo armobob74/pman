@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block head%}
+{% endblock %}
+{% block content%}
+<h2>Transfer</h2>
+<form>
+	<label for="from_port">From Port</label>
+	<input type="text" name="from_port" id="from_port" value="" />
+	<label for="to_port">To Port</label>
+	<input type="text" name="to_port" id="to_port" value="" />
+	<label for="volume">Volume</label>
+	<input type="text" name="volume" id="volume" value="" />
+	<button class="execute" type="button">Submit</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+	const btn = document.querySelector('form>button')
+	btn.addEventListener('click',()=>{
+		transfer(from_port.value, to_port.value, volume.value);
+	})
+
+	enforceCharset("to_port", digits)
+	enforceRange("to_port", 1,8)
+
+	enforceCharset("from_port", digits)
+	enforceRange("from_port", 1,8)
+</script>
+{% endblock%}

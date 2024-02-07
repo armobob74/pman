@@ -1,0 +1,161 @@
+* {
+  box-sizing: border-box; }
+
+svg {
+  width: 1em;
+  height: 1em;
+  stroke-width: 5;
+  fill: white; }
+
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  font-family: Tahoma, Geneva, Verdana, sans-serif; }
+
+.sidebar {
+  resize: horizontal;
+  overflow: auto;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 25vw;
+  height: 100vh;
+  background-color: white;
+  border-right: dotted 1px gray; }
+  .sidebar .sidecard {
+    text-decoration: none;
+    color: black;
+    padding-left: 30px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3em; }
+  .sidebar .sidecard:hover,
+  .sidebar .sidecard.active {
+    cursor: pointer;
+    background-color: #e6e6e6; }
+    .sidebar .sidecard:hover svg,
+    .sidebar .sidecard.active svg {
+      fill: black; }
+
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  flex-grow: 1; }
+  .main .content-container {
+    background-color: white;
+    height: 60%;
+    display: flex;
+    overflow: auto;
+    resize: vertical;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column; }
+    .main .content-container form {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      gap: 10px;
+      _max-width: 50%; }
+      .main .content-container form input {
+        max-width: 200px;
+        border-radius: 0.3em; }
+      .main .content-container form input:not(.error) {
+        border: solid 1px #999999; }
+    .main .content-container .vol-from-port {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 0.5em;
+      gap: 10px; }
+  .main .response-container {
+    scroll-behavior: smooth;
+    display: flex;
+    flex-grow: 1;
+    gap: 0.5em;
+    flex-direction: column;
+    padding: 10px;
+    border-top: dotted 1px gray;
+    overflow: auto; }
+    .main .response-container .error {
+      color: #d94c53; }
+
+button {
+  cursor: pointer;
+  background-color: white;
+  border: solid 2px gray;
+  color: gray;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  transition: 0.15s all; }
+
+button.error,
+button.warning {
+  color: white;
+  border: none; }
+
+button.error {
+  background-color: #d94c53; }
+
+button.error:hover {
+  background-color: #c82a32; }
+
+button.warning {
+  color: black;
+  background-color: #ede547; }
+
+button.warning:hover {
+  color: black;
+  background-color: #bcb312; }
+
+button.save {
+  background-color: #a503fc;
+  border-color: #a503fc;
+  color: black;
+  width: 50%; }
+
+button:hover {
+  background-color: #a503fc;
+  border-color: #a503fc;
+  color: white; }
+
+button.add-btn {
+  width: 4em; }
+
+button.execute {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: white; }
+  button.execute:not(:hover) {
+    background-color: #a503fc;
+    border-color: #a503fc; }
+
+div.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; }
+
+#config-form {
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly; }
+
+select {
+  background-color: white;
+  border: solid 1px #999999;
+  border-radius: 0.3em; }
+
+select:hover:not(:disabled) {
+  background-color: #e6e6e6; }
+
+select.error {
+  border: solid 1px red; }
+
+input.error {
+  border: solid 1px red; }
+
+.unsaved-change {
+  color: darkorange; }
