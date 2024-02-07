@@ -1,5 +1,6 @@
 from flask import Blueprint, request, current_app
 from functools import wraps
+import json
 
 pman = Blueprint('pman', __name__,url_prefix='/pman')
 
