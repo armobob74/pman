@@ -1,10 +1,56 @@
 from queue import Queue
 from threading import Lock, Thread
 import serial
+from serial.serialutil import SerialException
 
+class MockSerial:
+    """This class is used for manual testing when an actual serial connection does not exist"""
+    def __init__(self, *args, **kwargs):
+        self.read_buffer = bytearray()
+        self.write_buffer = bytearray()
+        self.is_open = True  # Simulate the port being open initially
+
+    def read(self, size=1):
+        data = self.read_buffer[:size]
+        self.read_buffer = self.read_buffer[size:]
+        return bytes(data)
+
+    def write(self, data):
+        self.write_buffer.extend(data)
+        return len(data)  # Typically, serial.write returns the number of bytes written
+
+    def read_until(self, terminator=b'\n', size=None):
+        result = bytearray()
+        while True:
+            if size is not None and len(result) >= size:
+                break
+            if len(self.read_buffer) == 0:
+                break
+            next_byte = self.read(1)
+            result.extend(next_byte)
+            if result.endswith(terminator):
+                break
+        return bytes(result)
+
+    def open(self):
+        self.is_open = True
+
+    def close(self):
+        self.is_open = False
+
+    def flush(self):
+        self.write_buffer.clear()
+
+    def in_waiting(self):
+        return len(self.read_buffer)
+    
 class Connection:
     def __init__(self, serial_port="/dev/ttyUSB0", baud_rate=9600):
-        self.serial = serial.Serial(serial_port, baud_rate)
+        try:
+            self.serial = serial.Serial(serial_port, baud_rate)
+        except SerialException:
+            print("### Could not open serial port, running in no-serial mode ###")
+            self.serial = MockSerial()
         self.interrupt_flag = False
         self.lock = Lock()  # for thread safety
         self.command_queue = Queue()
