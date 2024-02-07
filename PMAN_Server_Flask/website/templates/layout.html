@@ -5,7 +5,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hamilton Pump Interface</title>
+    <title>PMAN Server</title>
     <link
       href="{{url_for('static',filename='css/base_style.css')}}"
       rel="stylesheet"
@@ -13,9 +13,11 @@
   </head>
   <body>
     <div class="sidebar">
-      {{ sidecard("Query", "/")}} {{ sidecard("Settings", "/settings")}} {{
-      sidecard("Control", "/control")}}
-      {{ sidecard("Transfer", "/transfer")}} {{ sidecard("Mix", "/mix")}}
+      {{ sidecard("Query", "/")}}
+      {{ sidecard("Settings", "/settings")}}
+      {{ sidecard("Control", "/control")}}
+      {{ sidecard("Transfer", "/transfer")}}
+      {{ sidecard("Mix", "/mix")}}
     </div>
     <div class="main">
       <div class="content-container" id="content-container">
