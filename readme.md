@@ -232,57 +232,64 @@ def transfer(from_port, to_port, volume):
 
 ### Serial Communication
 
-Serial communication can be handled by the `pyserial` library. Serial communication involves transmitting data between a computer and peripheral devices sequentially, bit by bit. Because there's only one connection, it's advisable to set it as a singleton `app.connection` and manage all requests through this one instance. When designing `app.connection`, be sure to provide an easy way to interrupt the connection and provide a hardstop command to the machine. This should be done as `app.connection.hardstop()`. A good way to do this is to use a `Lock` and an `interrupt_flag`. An example is shown below:
+Serial communication can be handled by the `pyserial` library. Serial communication involves transmitting data between a computer and peripheral devices sequentially, bit by bit. Because there's only one connection, it's advisable to set it as a singleton `app.connection` and manage all requests through this one instance. When designing `app.connection`, be sure to provide an easy way to interrupt the connection and provide a hardstop command to the machine. This should be done as `app.connection.hardstop()`. A good way to do this is to use a `Lock` and an `interrupt_flag`. We also implement a queue to guarantee that commands are processed in the order that they are sent. An example is shown below:
 
 ```python
 from flask import Flask
+from queue import Queue
+from threading import Lock, Thread
 import serial
-from threading import Lock
+
 class Connection:
     def __init__(self, serial_port="/dev/ttyUSB0", baud_rate=9600):
-        """
-        Initialize the connection
-        """
-        self.serial = serial.Serial(serial_port,baud_rate)
+        self.serial = serial.Serial(serial_port, baud_rate)
         self.interrupt_flag = False
-        self.lock = Lock() # for thread safety
+        self.lock = Lock()  # for thread safety
+        self.command_queue = Queue()
+        self.worker_thread = Thread(target=self.process_commands)
+        self.worker_thread.daemon = True  # Daemon thread exits when the main program exits
+        self.worker_thread.start()
 
     def hardstop(self, hardstop_command='T'):
-        """
-        enable emergency stop if necessary.
-        """
         self.interrupt_flag = True
-        response = self.send(self.prepare_command(hardstop_command))
+        response = self.send(hardstop_command, immediate=True)  # Immediate flag to bypass queue in emergency
         return response
 
     def prepare_command(self, data, address='0'):
-        """
-        Command format: <address><data><CR>
-        """
         return f"{address}{data}\r"
 
-    def send(self,command, read_until_char='\n'):
-        with self.lock:
-            if self.interrupt_flag:
-                raise InterruptedError("Operation Interrupted")
-            self.serial.send(command.encode())
-            response = self.serial.read_until(read_until_char.encode())
+    def send(self, command, immediate=False):
+        if immediate:
+            with self.lock:
+                return self._send_command(self.prepare_command(command))
+        else:
+            self.command_queue.put(command)
+
+    def _send_command(self, command, read_until_char='\n'):
+        if self.interrupt_flag:
+            raise InterruptedError("Operation Interrupted")
+        self.serial.write(command.encode())
+        response = self.serial.read_until(read_until_char.encode())
         return self.parse_response(response)
 
+    def process_commands(self):
+        while True:
+            command = self.command_queue.get()  # This will block until a command is available
+            with self.lock:
+                self._send_command(self.prepare_command(command))
+            self.command_queue.task_done()  # Mark the processed task as done
+
     def parse_response(self, response):
-        """
-        Depends on the machine's response format
-        """
         response_data = response.decode().strip()
-        return response
+        return response_data
 
     def reset_interrupt(self):
         self.interrupt_flag = False
 
-
 def create_app():
     app = Flask(__app__)
     app.connection = Connection()
+
 app = create_app()
 ```
 
