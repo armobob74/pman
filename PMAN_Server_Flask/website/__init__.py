@@ -3,7 +3,7 @@ import sass
 from .views import views
 import os
 from .connection import Connection
-from .pman import pman
+from .pman_blueprints.aurora_valve import aurora_valve
 import logging
 
 LOG_DIR = 'logs'
@@ -35,5 +35,5 @@ def create_app():
         app.logger.addHandler(handler)
     app.connection = Connection()
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(pman, url_prefix='/pman')
+    app.register_blueprint(aurora_valve)
     return app

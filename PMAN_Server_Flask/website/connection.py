@@ -63,13 +63,10 @@ class Connection:
         response = self.send(hardstop_command, immediate=True)  # Immediate flag to bypass queue in emergency
         return response
 
-    def prepare_command(self, data, address='0'):
-        return f"{address}{data}\r"
-
     def send(self, command, immediate=False):
         if immediate:
             with self.lock:
-                return self._send_command(self.prepare_command(command))
+                return self._send_command(command)
         else:
             self.command_queue.put(command)
 
@@ -84,7 +81,7 @@ class Connection:
         while True:
             command = self.command_queue.get()  # This will block until a command is available
             with self.lock:
-                self._send_command(self.prepare_command(command))
+                self._send_command(command)
             self.command_queue.task_done()  # Mark the processed task as done
 
     def parse_response(self, response):

@@ -14,3 +14,8 @@ def settings():
 def example():
     """ Show an example of a typical PMAN form """
     return render_template('example.html')
+
+@views.route('/aurora-valve/switch-to-port')
+def auroraValveSwitchToPort():
+    """ Switch to desired port on aurora valve """
+    return render_template('aurora-valve/switch_to_port.html')

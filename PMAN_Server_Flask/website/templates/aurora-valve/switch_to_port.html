@@ -1,0 +1,15 @@
+{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+<h2>Switch to Port</h2>
+<div class="q_grid">
+	{%for i in range(10)%}
+	<button type="button" onclick=switchToPort({{i+1}})>{{i+1}}</button>
+  {%endfor%}
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  async function switchToPort(n){
+    const response = await fetchPOST("/pman/aurora-valve/switch-to-port", { args: [n] });
+    display(response);
+  }
+</script>
+{% endblock%}
