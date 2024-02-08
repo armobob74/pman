@@ -32,13 +32,14 @@ def create_app(config_path='configs/aurora.json'):
     sass.compile(dirname=('./website/static/sass','./website/static/css'))
     app = Flask(__name__)
     app.config['pman-config-path'] = config_path
-    with app.open_resource(config_path) as pman_config:
-        app.config['pman-config'] = json.load(pman_config)
+    with app.open_resource(config_path) as f:
+        app.config['pman-config'] = json.load(f)
+    pman_config = app.config['pman-config']
 
     app.logger.setLevel(logging.DEBUG)
     for handler in create_handlers():
         app.logger.addHandler(handler)
-    app.connection = Connection()
+    app.connection = Connection(serial_port=pman_config['serial_port'])
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(aurora_valve)
     return app

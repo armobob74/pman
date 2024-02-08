@@ -46,7 +46,7 @@ class MockSerial:
         return len(self.read_buffer)
     
 class Connection:
-    def __init__(self, serial_port="/dev/ttyUSB0", baud_rate=9600):
+    def __init__(self, serial_port, baud_rate=9600):
         try:
             self.serial = serial.Serial(serial_port, baud_rate)
             print(f"### connected to port {serial_port} ###")
