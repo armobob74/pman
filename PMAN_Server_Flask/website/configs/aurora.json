@@ -1,5 +1,5 @@
 {
   "port": 5110,
-  "serial_port":"/dev/ttyUSB0",
+  "serial_port":"COM32",
   "sidecards": [["Switch to Port", "/aurora-valve/switch-to-port"]]
 }
