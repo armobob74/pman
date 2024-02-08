@@ -1,5 +1,4 @@
 {% from "macros.html" import sidecard %}
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -13,10 +12,9 @@
   </head>
   <body>
     <div class="sidebar">
-      {{ sidecard("Query", "/")}}
-      {{ sidecard("Settings", "/settings")}}
-      {{ sidecard("Example", "/example")}}
-      {{ sidecard("Switch to Port", "/aurora-valve/switch-to-port")}}
+    {% for tup in sidecards %}
+      {{ sidecard(tup[0], tup[1])}}
+    {% endfor %}
     </div>
     <div class="main">
       <div class="content-container" id="content-container">

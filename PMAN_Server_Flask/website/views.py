@@ -1,6 +1,15 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
+from flask import Blueprint, current_app, render_template, request, flash, jsonify, redirect, url_for
+import json
 
 views = Blueprint('views', __name__)
+
+@views.context_processor
+def inject_config():
+    # allows the chosen pman config to be used by the templates in this blueprint
+    # primarily for conditional rendering of sidecards
+    with current_app.open_resource(current_app.config['pman-config-path']) as pman_config:
+        config_data = json.load(pman_config)
+    return config_data
 
 @views.route('/')
 def index():

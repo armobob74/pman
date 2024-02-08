@@ -27,9 +27,10 @@ def create_handlers():
 
     return [debug_handler, info_handler]
 
-def create_app():
+def create_app(config_path='configs/aurora.json'):
     sass.compile(dirname=('./website/static/sass','./website/static/css'))
     app = Flask(__name__)
+    app.config['pman-config-path'] = config_path
     app.logger.setLevel(logging.DEBUG)
     for handler in create_handlers():
         app.logger.addHandler(handler)
