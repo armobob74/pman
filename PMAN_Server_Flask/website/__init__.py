@@ -1,4 +1,5 @@
 from flask import Flask
+import json
 import sass
 from .views import views
 import os
@@ -31,6 +32,9 @@ def create_app(config_path='configs/aurora.json'):
     sass.compile(dirname=('./website/static/sass','./website/static/css'))
     app = Flask(__name__)
     app.config['pman-config-path'] = config_path
+    with app.open_resource(config_path) as pman_config:
+        app.config['pman-config'] = json.load(pman_config)
+
     app.logger.setLevel(logging.DEBUG)
     for handler in create_handlers():
         app.logger.addHandler(handler)

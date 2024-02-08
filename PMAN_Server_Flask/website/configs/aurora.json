@@ -1,5 +1,4 @@
 {
-  "sidecards": [
-	["Switch to Port", "/aurora-valve/switch-to-port"]
-  ]
+  "port": 5110,
+  "sidecards": [["Switch to Port", "/aurora-valve/switch-to-port"]]
 }

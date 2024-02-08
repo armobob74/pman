@@ -7,9 +7,7 @@ views = Blueprint('views', __name__)
 def inject_config():
     # allows the chosen pman config to be used by the templates in this blueprint
     # primarily for conditional rendering of sidecards
-    with current_app.open_resource(current_app.config['pman-config-path']) as pman_config:
-        config_data = json.load(pman_config)
-    return config_data
+    return current_app.config['pman-config']
 
 @views.route('/')
 def index():
