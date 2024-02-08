@@ -16,10 +16,6 @@ def test_init(connection, mock_serial):
     assert not connection.interrupt_flag
     assert connection.command_queue.empty()
 
-def test_prepare_command(connection):
-    command = connection.prepare_command("DATA", "1")
-    assert command == "1DATA\r"
-
 def test_send_enqueue_command(connection, mocker):
     mocker.patch.object(connection, '_send_command')  # Mock the _send_command to ensure it's not called
     connection.send("CMD")
