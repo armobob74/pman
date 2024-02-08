@@ -14,6 +14,14 @@ This is a general-purpose server designed to make it easy to integrate lab instr
 
 The `port` argument tells the server which port to run on, while the `serial_port` argument tells the server what port to communicate with. The `sidecards` argument controls the rendering of `layout.html`.
 
+To select a config, pass it as an argument to the `main.py` program like so:
+
+```zsh
+python config_name.json
+```
+
+Note that `config_name` is NOT a full path -- all configs are stored in the `website/configs` directory
+
 ## Instrument Blueprints
 
 Each class of instrument gets its own blueprint in `website/pman_blueprints`. This blueprint should handle all logic related to the instrument, including compilation of serial commands. But the serial connection itself is managed by the `app.connection` object.

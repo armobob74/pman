@@ -28,12 +28,14 @@ def create_handlers():
 
     return [debug_handler, info_handler]
 
-def create_app(config_path='configs/aurora.json'):
+def create_app(pman_config_name):
     sass.compile(dirname=('./website/static/sass','./website/static/css'))
     app = Flask(__name__)
-    app.config['pman-config-path'] = config_path
-    with app.open_resource(config_path) as f:
+    pman_config_path = os.path.join('configs',pman_config_name)
+    app.config['pman-config-path'] = pman_config_path
+    with app.open_resource(pman_config_path) as f:
         app.config['pman-config'] = json.load(f)
+    print("Loaded config:", pman_config_name)
     pman_config = app.config['pman-config']
 
     app.logger.setLevel(logging.DEBUG)

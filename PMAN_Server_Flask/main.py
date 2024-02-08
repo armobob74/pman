@@ -1,7 +1,17 @@
 from website import create_app
 from flask import render_template
+import sys, os
 
-app = create_app()
+
+args = sys.argv
+if len(args) > 1:
+    pman_config_name = args[1]
+else:
+    pman_config_name = 'test.json'
+if not pman_config_name.endswith('.json'):
+    pman_config_name += '.json'
+
+app = create_app(pman_config_name)
 
 pman_config = app.config['pman-config']
 if 'port' in pman_config: 
