@@ -1,4 +1,5 @@
 from queue import Queue
+import pdb
 from threading import Lock, Thread
 import serial
 from serial.serialutil import SerialException
@@ -48,8 +49,9 @@ class Connection:
     def __init__(self, serial_port="/dev/ttyUSB0", baud_rate=9600):
         try:
             self.serial = serial.Serial(serial_port, baud_rate)
+            print(f"### connected to port {serial_port} ###")
         except SerialException:
-            print("### Could not open serial port, running in no-serial mode ###")
+            print(f"### Could not open serial port {serial_port}, running in no-serial mode ###")
             self.serial = MockSerial()
         self.interrupt_flag = False
         self.lock = Lock()  # for thread safety
@@ -64,18 +66,26 @@ class Connection:
         return response
 
     def send(self, command, immediate=False):
+        # immediate commands bypas the queue
+        # this allows them to return their responses to the endpoint that called them
         if immediate:
             with self.lock:
-                return self._send_command(command)
+                self._send_command(command)
+                return self._read_bytes()
         else:
             self.command_queue.put(command)
 
-    def _send_command(self, command, read_until_char='\n'):
+    def _send_command(self, command):
         if self.interrupt_flag:
             raise InterruptedError("Operation Interrupted")
-        self.serial.write(command.encode())
-        response = self.serial.read_until(read_until_char.encode())
-        return self.parse_response(response)
+        self.serial.write(command)
+        return None
+
+    def _read_bytes(self, n=8):
+        if self.interrupt_flag:
+            raise InterruptedError("Operation Interrupted")
+        response = self.serial.read(8)
+        return response
 
     def process_commands(self):
         while True:
@@ -83,10 +93,6 @@ class Connection:
             with self.lock:
                 self._send_command(command)
             self.command_queue.task_done()  # Mark the processed task as done
-
-    def parse_response(self, response):
-        response_data = response.decode().strip()
-        return response_data
 
     def reset_interrupt(self):
         self.interrupt_flag = False

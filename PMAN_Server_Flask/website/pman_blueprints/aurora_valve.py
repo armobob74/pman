@@ -15,12 +15,13 @@ def format_command(cmd, arg1=b'\x00', arg2=b'\x00'):
     final_command = start_bytes + cmd_arg1_arg2 + end_bytes + bytes([LB, HB])
     return final_command
 
+
 @aurora_valve.route("/switch-to-port", methods=["POST"])
 @extract_pman_args
 def switch_to_valve(port_number):
     current_app.logger.debug(f"Called switch_to_valve({port_number})")
     to_port = int(port_number).to_bytes(1, "little")
-    command = format_command(cmd=b'\xff', arg1=to_port) 
-
-    return command
+    command = format_command(cmd=b'\x44', arg1=to_port) 
+    response = current_app.connection.send(command, immediate=True)
+    return {'status':'ok','message':response.hex()}
 
