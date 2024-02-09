@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 import json
 import sass
 from .views import views
@@ -31,6 +32,7 @@ def create_handlers():
 def create_app(pman_config_name):
     sass.compile(dirname=('./website/static/sass','./website/static/css'))
     app = Flask(__name__)
+    CORS(app)
     pman_config_path = os.path.join('configs',pman_config_name)
     app.config['pman-config-path'] = pman_config_path
     with app.open_resource(pman_config_path) as f:
