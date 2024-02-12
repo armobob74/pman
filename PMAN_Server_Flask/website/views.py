@@ -29,5 +29,12 @@ def auroraValveSwitchToPort():
 
 @views.route('/aurora-pump/transfer')
 def auroraPumpTransfer():
-    """ aurora pump transfer"""
     return render_template('aurora-pump/transfer.html')
+
+@views.route('/aurora-pump/set-velocity')
+def auroraPumpSetVelocity():
+    return render_template('aurora-pump/set-velocity.html')
+
+@views.route('/aurora-pump/control')
+def auroraPumpControl():
+    return render_template('aurora-pump/control.html')

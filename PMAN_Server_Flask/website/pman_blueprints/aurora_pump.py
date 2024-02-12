@@ -38,26 +38,55 @@ def transfer_command_string(from_port, to_port, volume):
     return partial_transfers + full_transfers + 'R'
 
 def parse_response(response_bytes):
+    # first byte can not be decoded in utf-8
     response_data = response_bytes[1:-3].decode()
     current_app.logger.debug(f"Got response: {response_data}")
     return response_data
 
 @aurora_pump.route("/transfer", methods=["POST"])
 @extract_pman_args
-def switch_to_port(from_port, to_port, volume):
+def transfer(from_port, to_port, volume):
     current_app.logger.debug(f"Called aurora transfer({from_port, to_port, volume})")
     volume = float(volume)
     command_string = transfer_command_string(from_port, to_port, volume)
     command = format_command(data=command_string) 
-
-    # first byte of response can't be decoded in utf-8
     response = current_app.connection.send(command, immediate=True)
     return {'status':'ok','message':parse_response(response)}
 
-@aurora_pump.route("/set-speed-code", methods=["POST"])
+@aurora_pump.route("/set-velocity", methods=["POST"])
 @extract_pman_args
-def set_speed_code(speed_code):
-    current_app.logger.debug(f"Called aurora set speed-code ({speed_code})")
-    command = format_command(data=f'S{speed_code}R')
+def set_velocity(velocity):
+    """ Set max velocity in mL/min """
+    current_app.logger.debug(f"Called aurora set velocity ({velocity})")
+    velocity_steps_per_min = vol_to_steps(float(velocity))
+    velocity_steps_per_sec = int(velocity_steps_per_min // 60)
+    command = format_command(data=f'V{velocity_steps_per_sec}R')
+    response = current_app.connection.send(command, immediate=True)
+    return {'status':'ok','message':parse_response(response)}
+
+@aurora_pump.route("/switch-to-port", methods=["POST"])
+@extract_pman_args
+def switch_to_port(port):
+    current_app.logger.debug(f"Called aurora switch-to-port({port})")
+    command_string = f"I{port}R"
+    command = format_command(data=command_string) 
+    response = current_app.connection.send(command, immediate=True)
+    return {'status':'ok','message':parse_response(response)}
+
+@aurora_pump.route("/pull", methods=["POST"])
+@extract_pman_args
+def pull(volume):
+    current_app.logger.debug(f"Called aurora pull({volume})")
+    steps = vol_to_steps(float(volume))
+    command = format_command(f"P{steps}R") 
+    response = current_app.connection.send(command, immediate=True)
+    return {'status':'ok','message':parse_response(response)}
+
+@aurora_pump.route("/push", methods=["POST"])
+@extract_pman_args
+def push(volume):
+    current_app.logger.debug(f"Called aurora push({volume})")
+    steps = vol_to_steps(float(volume))
+    command = format_command(f"D{steps}R") 
     response = current_app.connection.send(command, immediate=True)
     return {'status':'ok','message':parse_response(response)}
