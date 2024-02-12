@@ -15,7 +15,6 @@ def format_command(cmd, arg1=b'\x00', arg2=b'\x00'):
     final_command = start_bytes + cmd_arg1_arg2 + end_bytes + bytes([LB, HB])
     return final_command
 
-
 @aurora_valve.route("/switch-to-port", methods=["POST"])
 @extract_pman_args
 def switch_to_valve(port_number):
