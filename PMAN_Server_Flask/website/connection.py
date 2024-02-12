@@ -46,7 +46,9 @@ class MockSerial:
         return len(self.read_buffer)
     
 class Connection:
-    def __init__(self, serial_port, baud_rate=9600):
+    def __init__(self, serial_port, baud_rate=9600, read_until=None):
+        self.read_until = read_until
+        print(f"read_until: {read_until}")
         try:
             self.serial = serial.Serial(serial_port, baud_rate)
             print(f"### connected to port {serial_port} ###")
@@ -84,7 +86,10 @@ class Connection:
     def _read_bytes(self, n=8):
         if self.interrupt_flag:
             raise InterruptedError("Operation Interrupted")
-        response = self.serial.read(8)
+        if self.read_until:
+            response = self.serial.read_until(self.read_until.encode())
+        else:
+            response = self.serial.read(8)
         return response
 
     def process_commands(self):

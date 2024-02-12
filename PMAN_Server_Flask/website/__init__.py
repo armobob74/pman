@@ -6,6 +6,7 @@ from .views import views
 import os
 from .connection import Connection
 from .pman_blueprints.aurora_valve import aurora_valve
+from .pman_blueprints.aurora_pump import aurora_pump
 import logging
 
 LOG_DIR = 'logs'
@@ -39,11 +40,14 @@ def create_app(pman_config_name):
         app.config['pman-config'] = json.load(f)
     print("Loaded config:", pman_config_name)
     pman_config = app.config['pman-config']
-
     app.logger.setLevel(logging.DEBUG)
     for handler in create_handlers():
         app.logger.addHandler(handler)
-    app.connection = Connection(serial_port=pman_config['serial_port'])
+    app.connection = Connection(
+            serial_port=pman_config['serial_port'],
+            read_until=pman_config.get('read_until', None)
+        )
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(aurora_valve)
+    app.register_blueprint(aurora_pump)
     return app

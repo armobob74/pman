@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+<h2>Transfer</h2>
+<form id="transferForm">
+  <label for="from_port">From Port:</label>
+  <input type="text" id="from_port" name="from_port"><br><br>
+  <label for="to_port">To Port:</label>
+  <input type="text" id="to_port" name="to_port"><br><br>
+  <label for="volume">Volume:</label>
+  <input type="text" id="volume" name="volume"><br><br>
+  <input type="submit" value="Submit">
+</form>
+{% endblock %} {% block scripts %}
+<script>
+  document.getElementById("transferForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const from_port = document.getElementById("from_port").value;
+    const to_port = document.getElementById("to_port").value;
+    const volume = document.getElementById("volume").value;
+    await apTransfer([from_port, to_port, volume]);
+  });
+  async function apTransfer(args){
+    const response = await fetchPOST("/pman/aurora-pump/transfer", { args: args });
+    display(response);
+  }
+</script>
+{% endblock%}

@@ -26,3 +26,8 @@ def example():
 def auroraValveSwitchToPort():
     """ Switch to desired port on aurora valve """
     return render_template('aurora-valve/switch_to_port.html')
+
+@views.route('/aurora-pump/transfer')
+def auroraPumpTransfer():
+    """ aurora pump transfer"""
+    return render_template('aurora-pump/transfer.html')
