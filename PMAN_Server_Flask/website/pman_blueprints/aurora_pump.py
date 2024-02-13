@@ -45,8 +45,9 @@ def parse_response(response_bytes):
 
 def is_busy():
     command = format_command('Q')
-    response = current_app.connection.send(command)
+    response = current_app.connection.send(command, immediate=True)
     response = parse_response(response)
+        
     if '@' in response:
         current_app.logger.debug(f"Determined pump is busy")
         return True

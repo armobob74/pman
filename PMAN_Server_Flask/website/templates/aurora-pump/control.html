@@ -1,40 +1,91 @@
-{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+{% extends "layout.html" %} {% block head%}
+<style type="text/css" media="screen">
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* This creates 2 columns of equal width */
+    gap: 20px; /* Adjusts the space between grid items */
+    /* Add additional styling as needed */
+  }
 
-<h2>Pull</h2>
-<form id="pullForm">
-  <label for="pull-volume">Volume:</label>
-  <input type="text" id="pull-volume" name="pull-volume">
-  <button type="submit">Submit</button>
-</form>
-<h2>Push</h2>
-<form id="pushForm">
-  <label for="push-volume">Volume:</label>
-  <input type="text" id="push-volume" name="push-volume">
-  <button type="submit">Submit</button>
-</form>
-<h2>Switch to Port</h2>
-<div class="q_grid">
-	{%for i in range(10)%}
-	<button type="button" onclick=switchToPort({{i+1}})>{{i+1}}</button>
-  {%endfor%}
+  .grid-item {
+    /* Styles for individual items, if necessary */
+  }
+</style>
+{% endblock %} {% block content%}
+
+<div class="grid-container">
+  <div class="grid-item">
+    <h2>Pull</h2>
+    <form id="pullForm">
+      <label for="pull-volume">Volume:</label>
+      <input type="text" id="pull-volume" name="pull-volume" />
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <div class="grid-item">
+    <h2>Push</h2>
+    <form id="pushForm">
+      <label for="push-volume">Volume:</label>
+      <input type="text" id="push-volume" name="push-volume" />
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <div class="grid-item">
+    <h2>Switch to Port</h2>
+    <div class="q_grid">
+      {%for i in range(10)%}
+      <button type="button" onclick="switchToPort({{i+1}})">{{i+1}}</button>
+      {%endfor%}
+    </div>
+  </div>
+  <div class="grid-item">
+	  <button type="button" class="execute" onclick="init()">Initialize</button>
+	  <button type="button" class="execute" onclick="isBusy()">Check Is Busy</button>
+  </div>
 </div>
+
 {% endblock %} {% block scripts %}
 <script>
-  async function switchToPort(n){
-    const response = await fetchPOST("/pman/aurora-pump/switch-to-port", { args: [n] });
+  async function isBusy() {
+    const response = await fetchPOST("/pman/aurora-pump/is-busy", {
+      args: [],
+    });
     display(response);
   }
-  document.getElementById("pullForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-    const volume = document.getElementById("pull-volume").value;
-    const response = await fetchPOST("/pman/aurora-pump/pull", { args: [volume] });
+  async function init() {
+    const response = await fetchPOST("/pman/aurora-pump/custom", {
+      args: ["ZR"],
+    });
     display(response);
-  });
-  document.getElementById("pushForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-    const volume = document.getElementById("push-volume").value;
-    const response = await fetchPOST("/pman/aurora-pump/push", { args: [volume] });
+  }
+  async function switchToPort(n) {
+    const response = await fetchPOST("/pman/aurora-pump/switch-to-port", {
+      args: [n],
+    });
     display(response);
-  });
+  }
+  document
+    .getElementById("pullForm")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const volume = document.getElementById("pull-volume").value;
+      const response = await fetchPOST("/pman/aurora-pump/pull", {
+        args: [volume],
+      });
+      display(response);
+    });
+  document
+    .getElementById("pushForm")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const volume = document.getElementById("push-volume").value;
+      const response = await fetchPOST("/pman/aurora-pump/push", {
+        args: [volume],
+      });
+      display(response);
+    });
 </script>
 {% endblock%}

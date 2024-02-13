@@ -21,6 +21,18 @@
   async function apTransfer(args){
     const response = await fetchPOST("/pman/aurora-pump/transfer", { args: args });
     display(response);
+    waitForEnd();
+  }
+  async function waitForEnd(){
+	  let stat = true;
+  	  let response
+	  while(stat == true){
+		  await new Promise(resolve => setTimeout(resolve, 500)); // sleep for 0.5 seconds
+		  response = await fetchPOST("/pman/aurora-pump/is-busy", { args: [] });
+		  response = JSON.parse(response)
+		  stat = response['status']
+	  }
+	  display("done!")
   }
 </script>
 {% endblock%}
