@@ -5,6 +5,7 @@
   "sidecards": [
 	  ["Transfer", "/aurora-pump/transfer"],
 	  ["Set Velocity", "/aurora-pump/set-velocity"],
-	  ["Control", "/aurora-pump/control"]
+	  ["Control", "/aurora-pump/control"],
+	  ["Custom", "/aurora-pump/custom"]
   ]
 }

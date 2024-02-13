@@ -43,6 +43,21 @@ def parse_response(response_bytes):
     current_app.logger.debug(f"Got response: {response_data}")
     return response_data
 
+def is_busy():
+    command = format_command('Q')
+    response = current_app.connection.send(command)
+    response = parse_response(response)
+    if '@' in response:
+        current_app.logger.debug(f"Determined pump is busy")
+        return True
+    elif '`' in response:
+        current_app.logger.debug(f"Determined pump is NOT busy")
+        return False
+    else:
+        errormsg = "Pump responded to query incorrectly -- is it busy or not? (check debug log)"
+        current_app.logger.error(errormsg)
+        raise ValueError(errormsg)
+
 @aurora_pump.route("/transfer", methods=["POST"])
 @extract_pman_args
 def transfer(from_port, to_port, volume):
@@ -90,3 +105,22 @@ def push(volume):
     command = format_command(f"D{steps}R") 
     response = current_app.connection.send(command, immediate=True)
     return {'status':'ok','message':parse_response(response)}
+
+@aurora_pump.route("/custom", methods=["POST"])
+@extract_pman_args
+def custom(s):
+    current_app.logger.debug(f"Called aurora custom({s})")
+    command = format_command(s) 
+    response = current_app.connection.send(command, immediate=True)
+    return {'status':'ok','message':parse_response(response)}
+
+@aurora_pump.route("/is-busy", methods=["POST"])
+@extract_pman_args
+def isBusy():
+    current_app.logger.debug(f"Called aurora isBusy()")
+    status = is_busy()
+    if status:
+        message = 'pump is busy'
+    else:
+        message = 'pump is available'
+    return {'status':status,'message':message}

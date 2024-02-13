@@ -38,3 +38,7 @@ def auroraPumpSetVelocity():
 @views.route('/aurora-pump/control')
 def auroraPumpControl():
     return render_template('aurora-pump/control.html')
+
+@views.route('/aurora-pump/custom')
+def auroraPumpCustom():
+    return render_template('aurora-pump/custom.html')
