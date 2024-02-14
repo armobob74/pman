@@ -1,5 +1,6 @@
 from flask import current_app, request, Blueprint
 import pdb
+from math import log
 from .utils import extract_pman_args
 
 
@@ -16,7 +17,7 @@ max_draw_volume = 25 #mL
 syringe_size = 25 #mL
 def vol_to_steps(volume):
     """ 6000 steps == 25 mL """
-    steps = volume * resolution / syringe_size
+    steps = float(volume) * resolution / syringe_size
     return int(steps)
 
 max_height = vol_to_steps(max_draw_volume)
@@ -125,3 +126,42 @@ def isBusy():
     else:
         message = 'pump is available'
     return {'status':status,'message':message}
+
+@aurora_pump.route("/bubble-bust-transfer", methods=["POST"])
+@extract_pman_args
+def bubbleBustTransfer(from_port, waste_port, to_port, volume, fraction_air):
+    """ 
+    Special Transfer designed to eliminate air bubbles through repeated draw and release.
+    Here's the core idea: 
+        Say a transfer draws some fraction_air
+        fraction_air is a function of fluid viscosity, syringe speed, and tubing diameter(s).
+        The most efficient way to get rid of this air would be to turn to an output line and push it out
+        Then turn back to the input valve and pull more solution.
+        Notice that you'll have to pull volume_2 = fraction_air * volume_1
+        This means that the volume of air left after the second transfer = fraction_air ** 2 * volume_1
+        In general, total_fraction_air(n) = fraction_air ** n,
+            where n is number of recursive calls
+        To get to some target_fraction,
+            target_fraction = fraction_air ** n
+            log_fa(target_fraction) = log_fa(fraction_air ** n) = n
+            n = log(target_fraction) / log(fraction_air)
+    """
+    target_fraction = 0.02
+    current_app.logger.debug(f"Called aurora bubbleBustTransfer({from_port, to_port, volume, fraction_air})")
+    num_loops = round(log(target_fraction) / log(fraction_air))
+    current_app.logger.debug(f"Going to do {num_loops} transfers")
+    volume_in_steps = vol_to_steps(volume)
+    command = ''
+    # this loop loads the syringe without air bubbles
+    for _ in range(num_loops):
+        input_valve = f'I{int(from_port)}'
+        pull = f'P{volume_in_steps}'
+        output_valve = f'O{int(waste_port)}'
+        volume_in_steps = int(fraction_air * volume_in_steps)
+        push =  f'D{volume_in_steps}'
+        command += input_valve + pull + output_valve + push
+    # after syringe is full, transfer to the final port
+    command += f'O{int(to_port)}A0R'
+    command = format_command(command)
+    response = current_app.connection.send(command, immediate=True)
+    return {'status':'ok','message':parse_response(response)}
