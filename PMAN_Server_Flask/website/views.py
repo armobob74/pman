@@ -42,3 +42,7 @@ def auroraPumpControl():
 @views.route('/aurora-pump/custom')
 def auroraPumpCustom():
     return render_template('aurora-pump/custom.html')
+
+@views.route('/aurora-pump/bubble-bust-transfer')
+def auroraPumpBubbleBust():
+    return render_template('aurora-pump/bubble_bust_transfer.html')

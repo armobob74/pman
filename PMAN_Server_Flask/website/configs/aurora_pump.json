@@ -6,6 +6,7 @@
 	  ["Transfer", "/aurora-pump/transfer"],
 	  ["Set Velocity", "/aurora-pump/set-velocity"],
 	  ["Control", "/aurora-pump/control"],
-	  ["Custom", "/aurora-pump/custom"]
+	  ["Custom", "/aurora-pump/custom"],
+	  ["Bubble Bust", "/aurora-pump/bubble-bust-transfer"]
   ]
 }

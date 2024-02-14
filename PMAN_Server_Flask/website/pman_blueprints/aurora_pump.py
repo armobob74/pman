@@ -146,22 +146,27 @@ def bubbleBustTransfer(from_port, waste_port, to_port, volume, fraction_air):
             log_fa(target_fraction) = log_fa(fraction_air ** n) = n
             n = log(target_fraction) / log(fraction_air)
     """
+    from_port = int(from_port)
+    waste_port = int(waste_port)
+    to_port = int(to_port)
+    volume = float(volume)
+    fraction_air = float(fraction_air)
     target_fraction = 0.02
-    current_app.logger.debug(f"Called aurora bubbleBustTransfer({from_port, to_port, volume, fraction_air})")
+    current_app.logger.debug(f"Called aurora bubbleBustTransfer({from_port, waste_port, to_port, volume, fraction_air})")
     num_loops = round(log(target_fraction) / log(fraction_air))
     current_app.logger.debug(f"Going to do {num_loops} transfers")
     volume_in_steps = vol_to_steps(volume)
     command = ''
     # this loop loads the syringe without air bubbles
     for _ in range(num_loops):
-        input_valve = f'I{int(from_port)}'
+        input_valve = f'I{from_port}'
         pull = f'P{volume_in_steps}'
-        output_valve = f'O{int(waste_port)}'
+        output_valve = f'O{waste_port}'
         volume_in_steps = int(fraction_air * volume_in_steps)
         push =  f'D{volume_in_steps}'
         command += input_valve + pull + output_valve + push
     # after syringe is full, transfer to the final port
-    command += f'O{int(to_port)}A0R'
+    command += f'O{to_port}A0R'
     command = format_command(command)
     response = current_app.connection.send(command, immediate=True)
     return {'status':'ok','message':parse_response(response)}

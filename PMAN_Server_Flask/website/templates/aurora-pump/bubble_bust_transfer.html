@@ -1,0 +1,45 @@
+{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+<h2>Bubble Bust Transfer</h2>
+<p>This is a special transfer designed to address the issue of viscous pulls causing air bubbles. We pull a volume from from_port into the syringe, and assume that fraction_air is the fraction of air in the syringe. We push fraction_air from the syringe into waste_port -- ideally, waste_port is connected to the original input tube. We then pull fraction_air*volume from the input tube, and repeat the process until we get to under 2% estimated air. When we get to that target, we empty the syringe into to_port.</p>
+<form id="transferForm">
+  <label for="from_port">From Port:</label>
+  <input type="text" id="from_port" name="from_port">
+  <label for="waste_port">Waste Port:</label>
+  <input type="text" id="waste_port" name="waste_port">
+  <label for="to_port">To Port:</label>
+  <input type="text" id="to_port" name="to_port">
+  <label for="volume">Volume:</label>
+  <input type="text" id="volume" name="volume">
+  <label for="fraction_air">Fraction Air</label>
+  <input type="text" id="fraction_air" name="fraction_air">
+  <button type="submit">Submit</button>
+</form>
+{% endblock %} {% block scripts %}
+<script>
+  document.getElementById("transferForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const from_port = document.getElementById("from_port").value;
+    const waste_port = document.getElementById("waste_port").value;
+    const to_port = document.getElementById("to_port").value;
+    const volume = document.getElementById("volume").value;
+    const fraction_air = document.getElementById("fraction_air").value;
+    await ap_bb_Transfer([from_port, waste_port, to_port, volume, fraction_air]);
+  });
+  async function ap_bb_Transfer(args){
+    const response = await fetchPOST("/pman/aurora-pump/bubble-bust-transfer", { args: args });
+    display(response);
+    waitForEnd();
+  }
+  async function waitForEnd(){
+	  let stat = true;
+  	  let response
+	  while(stat == true){
+		  await new Promise(resolve => setTimeout(resolve, 500)); // sleep for 0.5 seconds
+		  response = await fetchPOST("/pman/aurora-pump/is-busy", { args: [] });
+		  response = JSON.parse(response)
+		  stat = response['status']
+	  }
+	  display("done!")
+  }
+</script>
+{% endblock%}
