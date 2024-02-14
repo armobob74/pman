@@ -152,6 +152,7 @@ def bubbleBustTransfer(from_port, waste_port, to_port, volume, fraction_air):
     volume = float(volume)
     fraction_air = float(fraction_air)
     target_fraction = 0.02
+    min_steps = 250 # anything less than this is not worth pulling 
     current_app.logger.debug(f"Called aurora bubbleBustTransfer({from_port, waste_port, to_port, volume, fraction_air})")
     num_loops = round(log(target_fraction) / log(fraction_air))
     current_app.logger.debug(f"Going to do {num_loops} transfers")
@@ -165,6 +166,8 @@ def bubbleBustTransfer(from_port, waste_port, to_port, volume, fraction_air):
         volume_in_steps = int(fraction_air * volume_in_steps)
         push =  f'D{volume_in_steps}'
         command += input_valve + pull + output_valve + push
+        if volume_in_steps <= min_steps:
+            break
     # after syringe is full, transfer to the final port
     command += f'O{to_port}A0R'
     command = format_command(command)
