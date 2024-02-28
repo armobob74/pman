@@ -1,13 +1,16 @@
+from .connection import Connection
+from .pman_blueprints.aurora_pump import aurora_pump
+from .pman_blueprints.aurora_valve import aurora_valve
+from .pman_blueprints.release_scheduler import release_scheduler
+
+from .views import views
 from flask import Flask
 from flask_cors import CORS
+from .scheduler import init_scheduler
 import json
-import sass
-from .views import views
-import os
-from .connection import Connection
-from .pman_blueprints.aurora_valve import aurora_valve
-from .pman_blueprints.aurora_pump import aurora_pump
 import logging
+import os
+import sass
 
 LOG_DIR = 'logs'
 INFO_FILE = 'info.log'
@@ -43,6 +46,7 @@ def create_app(pman_config_name):
     app.logger.setLevel(logging.DEBUG)
     for handler in create_handlers():
         app.logger.addHandler(handler)
+    init_scheduler(app)
     app.connection = Connection(
             serial_port=pman_config['serial_port'],
             read_until=pman_config.get('read_until', None)
@@ -50,4 +54,5 @@ def create_app(pman_config_name):
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(aurora_valve)
     app.register_blueprint(aurora_pump)
+    app.register_blueprint(release_scheduler)
     return app
