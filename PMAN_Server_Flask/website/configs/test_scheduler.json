@@ -4,6 +4,6 @@
   "read_until":"\n",
   "scheduler_tablepath":"csv/test.csv",
   "sidecards": [
-	  ["Release Scheduler", "/aurora-pump/bubble-bust-transfer"]
+	  ["Release Scheduler", "/release-scheduler/release-scheduler"]
   ]
 }

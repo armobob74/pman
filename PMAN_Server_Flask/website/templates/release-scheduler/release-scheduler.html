@@ -1,0 +1,173 @@
+{% extends "layout_simple.html" %} {% block head%}
+<style type="text/css" media="screen">
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+  }
+
+  button {
+    padding: 1em;
+    border-radius: 0;
+    border: solid 1px black;
+    background-color: white;
+    transition: 0.1s;
+  }
+
+  button.delete {
+    color: darkred;
+    border-color: darkred;
+    background-color: pink;
+  }
+  button.save {
+    color: darkgreen;
+    border-color: darkgreen;
+    background-color: lightgreen;
+  }
+  button.add-row {
+    color: navy;
+    border-color: navy;
+    background-color: lightblue;
+  }
+
+  button:hover {
+    background-color: lightgray;
+    cursor: pointer;
+  }
+
+  table {
+    margin: 0px;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: left;
+    table-layout: auto;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  thead {
+    background-color: #f2f2f2;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+  }
+
+  tbody td:hover {
+    background-color: #eaeaea;
+  }
+</style>
+{% endblock %} {% block content%}
+<div style="width: 100vw; margin-left: 1em">
+  <h2>Release Scheduler</h2>
+  <p>
+    The pump on <strong>Network_Port</strong> will draw from
+    <strong>Valve_Port</strong> at each of the specified
+    <strong>Hours</strong> after <strong>t0</strong>.
+  </p>
+</div>
+
+<table contenteditable="true">
+  <thead>
+    <tr contenteditable="false">
+      {% for header in headers %}
+      <th>{{header}}</th>
+      {% endfor %}
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody contenteditable="true">
+    {% for row in rows %}
+    <tr id="row_{{ loop.index0 }}">
+      {% for item in row %}
+      <td>{{ item }}</td>
+      {% endfor %}
+      <td>
+        <button
+          type="button"
+          class="delete"
+          onclick="delete_row('row_{{ loop.index0 }}')"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="buttonHolder">
+  <button type="button" class="add-row" onclick="addRow()">Add Row</button>
+  <button type="button" class="save" onclick="submitTable()">Save</button>
+</div>
+
+{% endblock %} {% block scripts %}
+<script>
+  // number of rows not including header
+  let num_rows = document.querySelectorAll("tr").length - 1;
+  function delete_row(row_id) {
+    let row = document.getElementById(row_id);
+    row.remove();
+  }
+  function tableToList() {
+    let table = document.querySelector("table");
+    let dataList = [];
+    let rows = table.querySelectorAll("tr");
+    rows.forEach(function (row) {
+      let rowData = [];
+      const cellsToSkip = row.querySelectorAll("td, th");
+      cellsToSkip.forEach(function (cell, index) {
+        if (index !== cellsToSkip.length - 1) {
+          rowData.push(cell.textContent);
+        }
+      });
+      dataList.push(rowData);
+    });
+    return dataList;
+  }
+  function submitTable() {
+    let endpoint = "/pman/release-scheduler/save-table";
+    let list = tableToList();
+    fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ data: list }),
+    });
+  }
+  const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+    timeZone: "America/Los_Angeles",
+    timeZoneName: "short",
+  });
+  function addRow() {
+    let table = document.querySelector("table");
+    let newRow = table.insertRow(-1);
+    let cellCount = table.rows[0].cells.length;
+    for (let i = 0; i < cellCount; i++) {
+      let newCell = newRow.insertCell(i);
+      newCell.contentEditable = true;
+    }
+    let current_datetime = new Date();
+    let headerCells = table.rows[0].cells;
+    let t0_index = Array.from(headerCells).findIndex(
+      (cell) => cell.textContent === "t0"
+    );
+
+    newRow.cells[t0_index].innerText = dateTimeFormatter.format(current_datetime);
+  }
+</script>
+{% endblock%}
