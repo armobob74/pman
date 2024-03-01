@@ -114,6 +114,7 @@
   function delete_row(row_id) {
     let row = document.getElementById(row_id);
     row.remove();
+    submitTable();
   }
   function tableToList() {
     let table = document.querySelector("table");
@@ -167,7 +168,8 @@
       (cell) => cell.textContent === "t0"
     );
 
-    newRow.cells[t0_index].innerText = dateTimeFormatter.format(current_datetime);
+    newRow.cells[t0_index].innerText =
+      dateTimeFormatter.format(current_datetime);
   }
 </script>
 {% endblock%}
