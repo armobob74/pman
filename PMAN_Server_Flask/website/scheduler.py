@@ -4,8 +4,8 @@ However, it can be expanded to be used by other processes if necessary
 """
 import pdb
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import timedelta
-from .pman_blueprints.csv_utils import read_csv
+from datetime import timedelta, datetime 
+from .pman_blueprints.csv_utils import read_csv, write_csv
 from dateutil import parser # handles datetime parsing automatically, including with timzones
 from uuid import uuid4
 
@@ -49,18 +49,34 @@ def build_joblist_from_csv(filepath, delimiter='\t'):
     return list of (action, datetime)
     input row format:
     ["5003", "4", "1,2,3","February 23, 2024 at 3:49:10 PM PST"]
+
+    also delete any expired jobs and re-write CSV if necessary
     """
     table = read_csv(filepath, delimiter)
     headers = table[0]
     rows = table[1:]
     joblist = []
+    non_expired_rows = []
     for row in rows:
         net_port = row[0]
         valve_port = row[1]
         hours = [float(s) for s in row[2].split(",")]
         dt = parser.parse(row[3])
+        row_jobtimes = []
+        now = datetime.now(dt.tzinfo)
         for hour in hours:
             delta = timedelta(hours=hour)
             jobtime = dt + delta
-            joblist.append((net_port, valve_port, jobtime))
+            if jobtime > now:
+                row_jobtimes.append(jobtime)
+                joblist.append((net_port, valve_port, jobtime))
+        if len(row_jobtimes) > 0:
+            non_expired_rows.append(row)
+        num_expired_rows = len(rows) - len(non_expired_rows)
+        if num_expired_rows > 0:
+            print(f"### found {num_expired_rows} expired rows -- deleting them now ###")
+            data = [headers] + non_expired_rows
+            write_csv(data, filepath, delimiter)
+        else:
+            print(f"### found {0} expired rows ###")
     return joblist
