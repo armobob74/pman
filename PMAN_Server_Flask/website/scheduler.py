@@ -68,14 +68,15 @@ def build_joblist_from_csv(filepath, delimiter='\t'):
 def remove_expired_jobs_and_rewrite_csv(filepath, delimiter='\t'):
     """
     Remove expired jobs from a CSV file and rewrite the file if necessary.
+    only applies to release scheduler
     """
     table = read_csv(filepath, delimiter)
     headers = table[0]
     non_expired_rows = []
-    now = datetime.now()
     for row in table[1:]:
         net_port, valve_port, hours_str, dt_str = row
         dt = parser.parse(dt_str)
+        now = datetime.now(dt.tzinfo)
         if any((dt + timedelta(hours=float(hour))) > now for hour in hours_str.split(",")):
             non_expired_rows.append(row)
     if len(non_expired_rows) < len(table) - 1:
