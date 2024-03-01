@@ -46,37 +46,41 @@ def reload_scheduler(scheduler, filepath):
 
 def build_joblist_from_csv(filepath, delimiter='\t'):
     """
-    return list of (action, datetime)
+    Generate a job list from a CSV file without modifying the file.
     input row format:
     ["5003", "4", "1,2,3","February 23, 2024 at 3:49:10 PM PST"]
+    
+    Returns a list of (action, datetime) tuples.
+    """
+    table = read_csv(filepath, delimiter)
+    joblist = []
+    for row in table[1:]:  # Skip header
+        net_port, valve_port, hours_str, dt_str = row
+        hours = [float(s) for s in hours_str.split(",")]
+        dt = parser.parse(dt_str)
+        now = datetime.now(dt.tzinfo)
+        for hour in hours:
+            jobtime = dt + timedelta(hours=hour)
+            if jobtime > now:
+                joblist.append((net_port, valve_port, jobtime))
+    return joblist
 
-    also delete any expired jobs and re-write CSV if necessary
+def remove_expired_jobs_and_rewrite_csv(filepath, delimiter='\t'):
+    """
+    Remove expired jobs from a CSV file and rewrite the file if necessary.
     """
     table = read_csv(filepath, delimiter)
     headers = table[0]
-    rows = table[1:]
-    joblist = []
     non_expired_rows = []
-    for row in rows:
-        net_port = row[0]
-        valve_port = row[1]
-        hours = [float(s) for s in row[2].split(",")]
-        dt = parser.parse(row[3])
-        row_jobtimes = []
-        now = datetime.now(dt.tzinfo)
-        for hour in hours:
-            delta = timedelta(hours=hour)
-            jobtime = dt + delta
-            if jobtime > now:
-                row_jobtimes.append(jobtime)
-                joblist.append((net_port, valve_port, jobtime))
-        if len(row_jobtimes) > 0:
+    now = datetime.now()
+    for row in table[1:]:
+        net_port, valve_port, hours_str, dt_str = row
+        dt = parser.parse(dt_str)
+        if any((dt + timedelta(hours=float(hour))) > now for hour in hours_str.split(",")):
             non_expired_rows.append(row)
-        num_expired_rows = len(rows) - len(non_expired_rows)
-        if num_expired_rows > 0:
-            print(f"### found {num_expired_rows} expired rows -- deleting them now ###")
-            data = [headers] + non_expired_rows
-            write_csv(data, filepath, delimiter)
-        else:
-            print(f"### found {0} expired rows ###")
-    return joblist
+    if len(non_expired_rows) < len(table) - 1:
+        print(f"### found {len(table) - 1 - len(non_expired_rows)} expired rows -- deleting them now ###")
+        data = [headers] + non_expired_rows
+        write_csv(data, filepath, delimiter)
+    else:
+        print("### found 0 expired rows ###")

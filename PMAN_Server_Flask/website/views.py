@@ -52,6 +52,7 @@ def auroraPumpBubbleBust():
 def releaseScheduler():
     if 'scheduler_tablepath' in current_app.config['pman-config']:
         tablepath = current_app.config['pman-config']['scheduler_tablepath']
+
         data = read_csv(tablepath)
     else:
         data = [['table','not','loaded'],['please','edit','config']]
