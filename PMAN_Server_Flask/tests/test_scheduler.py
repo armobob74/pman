@@ -4,11 +4,11 @@ These tests are currently pretty much just looking for release-test functionalit
 import os
 import sys
 sys.path.append('..')
-sys.path.append('../..')
 import pytest
 from random import randint
 from website import create_app
-from pman_blueprints.csv_utils import read_csv
+from website.pman_blueprints.csv_utils import read_csv
+os.chdir('..')
 
 @pytest.fixture
 def app():

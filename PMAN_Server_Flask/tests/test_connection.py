@@ -1,7 +1,7 @@
 import sys
 sys.path.append('..')
 import pytest
-from connection import Connection  # Adjust the import based on your project structure
+from website.connection import Connection  # Adjust the import based on your project structure
 
 @pytest.fixture
 def mock_serial(mocker):
