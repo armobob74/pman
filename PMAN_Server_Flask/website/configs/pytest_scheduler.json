@@ -1,0 +1,9 @@
+{
+  "port": 5109,
+  "serial_port":"/dev/ttyUSB0",
+  "read_until":"\n",
+  "scheduler_tablepath":"csv/pytest.csv",
+  "sidecards": [
+	  ["Release Scheduler", "/release-scheduler/release-scheduler"]
+  ]
+}
