@@ -1,4 +1,6 @@
 from flask import Blueprint, current_app, render_template, request, flash, jsonify, redirect, url_for
+from .pman_blueprints.csv_utils import read_csv
+from .scheduler import remove_expired_jobs_and_rewrite_csv
 import json
 
 views = Blueprint('views', __name__)
@@ -46,3 +48,15 @@ def auroraPumpCustom():
 @views.route('/aurora-pump/bubble-bust-transfer')
 def auroraPumpBubbleBust():
     return render_template('aurora-pump/bubble_bust_transfer.html')
+
+@views.route('/release-scheduler/release-scheduler')
+def releaseScheduler():
+    if 'scheduler_tablepath' in current_app.config['pman-config']:
+        tablepath = current_app.config['pman-config']['scheduler_tablepath']
+        remove_expired_jobs_and_rewrite_csv(tablepath)
+        data = read_csv(tablepath)
+    else:
+        data = [['table','not','loaded'],['please','edit','config']]
+    headers = data[0]
+    rows = data[1:]
+    return render_template('release-scheduler/release-scheduler.html', headers=headers, rows=rows)

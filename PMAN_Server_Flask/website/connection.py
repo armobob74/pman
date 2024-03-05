@@ -48,7 +48,6 @@ class MockSerial:
 class Connection:
     def __init__(self, serial_port, baud_rate=9600, read_until=None):
         self.read_until = read_until
-        print(f"read_until: {read_until}")
         try:
             self.serial = serial.Serial(serial_port, baud_rate)
             print(f"### connected to port {serial_port} ###")
