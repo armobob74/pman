@@ -4,10 +4,13 @@ However, it can be expanded to be used by other processes if necessary
 """
 import pdb
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import timedelta, datetime 
+from datetime import timedelta, datetime
+
+from flask import current_app 
 from .pman_blueprints.csv_utils import read_csv, write_csv
 from dateutil import parser # handles datetime parsing automatically, including with timzones
 from uuid import uuid4
+from website.pman_blueprints.aurora_pump import transfer_command_string
 
 def init_scheduler(app):
     """Initialize the scheduler with jobs defined in a CSV file."""
@@ -33,7 +36,7 @@ def init_scheduler(app):
 
 def add_job_to_scheduler(job_tuple, scheduler):
     s, dt = job_tuple
-    job = lambda s=s: print(s) 
+    job = lambda s=s: current_app.connection.send(s.encode(),immediate=True)  
     job_id = str(uuid4())  # id avoids scheduler collisions if two jobs share a run date
     scheduler.add_job(job, run_date=dt, id=job_id)
 
@@ -43,6 +46,7 @@ def reload_scheduler(scheduler, filepath):
     joblist = build_joblist_from_csv(filepath)
     for job_tuple in joblist:
         add_job_to_scheduler(job_tuple, scheduler)
+
 
 def build_joblist_from_csv(filepath, delimiter='\t'):
     """
@@ -61,7 +65,8 @@ def build_joblist_from_csv(filepath, delimiter='\t'):
         dt = parser.parse(dt_str)
         now = datetime.now(dt.tzinfo)
         for volume, hour in zip(volumes, hours):
-            command_string = f'{addr} {from_port} {to_port} {volume}' #TODO: get actual command string
+            command_data = transfer_command_string(from_port, to_port, volume)
+            command_string = f'/{addr}{command_data}\r'
             jobtime = dt + timedelta(hours=hour)
             if jobtime > now:
                 joblist.append((command_string, jobtime))
