@@ -5,7 +5,7 @@ import os
 import sys
 sys.path.append('..')
 import pytest
-from random import randint
+from random import randint, random
 from website import create_app
 from website.pman_blueprints.csv_utils import read_csv
 os.chdir('..')
@@ -24,6 +24,29 @@ def test_init(app):
     assert response.status_code == 200
     assert 'OK' in response.status
 
+def rand_list_str(n):
+    a = [round(10*random(),4) for _ in range(n)]
+    a.sort()
+    s = str(a)[1:-1].replace(' ','')
+    return s
+
+def rand_data_row():
+    """ ['Pump_Address','From_Port', 'To_Port', 'Volumes', 'Hours', 't0'] """
+    n = 10
+    min_port = 1
+    max_port = 10
+    hours = rand_list_str(n)
+    volumes = rand_list_str(n)
+    t0 = f'March {randint(1,15)}, 22{randint(10,99)} at 1:51:18 PM PST'
+    addr = str(randint(1,30))
+
+    from_port = randint(min_port, max_port)
+    to_port = randint(min_port, max_port)
+    while to_port == from_port:
+        to_port = randint(min_port, max_port)
+
+    return [addr, str(from_port), str(to_port), volumes, hours, t0]
+
 
 
 def test_table_update_e2e(app):
@@ -37,14 +60,13 @@ def test_table_update_e2e(app):
     # this simulates the table data from the front end
     datalen = randint(1,20)
     data = [
-            ['Network_port', 'Valve_port', 'Hours', 't0'],
+            ['Pump_Address',	'From_Port', 'To_Port', 'Volumes', 'Hours', 't0']
         ]
-
-    data += [['1', '1', f"{str(list(range(1,randint(2,10))))[1:-1].replace(' ','')}", f'March {randint(1,15)}, 22{randint(10,99)} at 1:51:18 PM PST'] for row in range(datalen)]
+    data += [rand_data_row() for _ in range(datalen)]
 
     expected_num_jobs = 0
     for row in data[1:]:
-        hours = row[2]
+        hours = row[-2]
         expected_num_jobs += len(hours.split(','))
 
     response = app.post('/pman/release-scheduler/save-table', json={'data': data})
