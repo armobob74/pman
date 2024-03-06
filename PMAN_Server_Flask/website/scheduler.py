@@ -62,7 +62,13 @@ def build_joblist_from_csv(filepath, delimiter='\t'):
         addr, from_port, to_port, volumes_str, hours_str, dt_str = row
         volumes = [float(s) for s in volumes_str.split(",")]
         hours = [float(s) for s in hours_str.split(",")]
-        dt = parser.parse(dt_str)
+        try:
+            dt = parser.parse(dt_str)
+        except parser.ParserError:
+            # schedule an event that will never happen
+            # this function doesn't alert the user -- that's handled by the save-table function
+            dt = datetime.now() + timedelta(hours=1000000) 
+            print("### Unrecognized time format, scheduling for never ###")
         now = datetime.now(dt.tzinfo)
         for volume, hour in zip(volumes, hours):
             command_data = transfer_command_string(from_port, to_port, volume)
@@ -82,7 +88,13 @@ def remove_expired_jobs_and_rewrite_csv(filepath, delimiter='\t'):
     non_expired_rows = []
     for row in table[1:]:
         hours_str, dt_str = row[-2:]
-        dt = parser.parse(dt_str)
+        try:
+            dt = parser.parse(dt_str)
+        except parser.ParserError:
+            # schedule an event that will never happen
+            # this function doesn't alert the user -- that's handled by the save-table function
+            dt = datetime.now() + timedelta(hours=1000000) 
+            print("### Unrecognized time format, scheduling for never ###")
         now = datetime.now(dt.tzinfo)
         if any((dt + timedelta(hours=float(hour))) > now for hour in hours_str.split(",")):
             non_expired_rows.append(row)
