@@ -80,6 +80,17 @@
       <strong>Valve_Port</strong> at time <strong>t0</strong> +
       <strong>Hour</strong>.
     </p>
+    <p>
+
+    t0 is parsed flexibly and intelligently, so it'll be able to understand most datetime strings
+    If the scheduler can't undrestand t0, it'll tell you 'BAD FORMAT' when you try to save the table.
+    Here are some example <strong>t0</strong> formats:<br>
+    <ul>
+	    <li>March 2, 2025 at 2:22 PM PST</li>
+    	    <li>Mar 02 2025 at 14:22 PST</li>
+    	    <li>03/02/2025 14:22 PST</li>
+    </ul>
+    </p>
   </div>
   <div
     style="display: flex; justify-content: flex-end; padding: 1em; flex-grow: 1"
@@ -145,7 +156,7 @@
 </table>
 <div class="buttonHolder">
   <button type="button" class="add-row" onclick="addRow()">Add Row</button>
-  <button type="button" class="save" onclick="submitTable()">Save</button>
+  <button type="button" class="save" onclick="submitTable().then(()=>{document.location.reload()})">Save</button>
 </div>
 
 {% endblock %} {% block scripts %}
@@ -173,10 +184,10 @@
     });
     return dataList;
   }
-  function submitTable() {
+  async function submitTable() {
     let endpoint = "/pman/release-scheduler/save-table";
     let list = tableToList();
-    fetch(endpoint, {
+    return fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -214,7 +225,7 @@
   }
   //This function is triggered when a file is selected
   document.getElementById("tsvInput").addEventListener("change", function () {
-	  populateTable().then(submitTable);
+	  populateTable().then(submitTable).then(()=>{document.location.reload()});
   });
 
   async function populateTable() {

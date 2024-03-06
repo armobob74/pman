@@ -59,4 +59,4 @@ def releaseScheduler():
         data = [['table','not','loaded'],['please','edit','config']]
     headers = data[0]
     rows = data[1:]
-    return render_template('release-scheduler/release-scheduler.html', headers=headers, rows=rows)
+    return render_template('release-scheduler/release-scheduler.html', headers=headers, rows=rows,bad_format_text=current_app.config['bad-format-text'])

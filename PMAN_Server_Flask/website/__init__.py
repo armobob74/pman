@@ -40,6 +40,10 @@ def create_app(pman_config_name):
     CORS(app)
     pman_config_path = os.path.join('configs',pman_config_name)
     app.config['pman-config-path'] = pman_config_path
+    # used to alert user of improper format
+    # usually front end handles this, but sometimes only backend knows when format is wrong
+    # e.g. when the backend dateutil parser can't parse a time
+    app.config['bad-format-text'] = ' -- BAD FORMAT' 
     with app.open_resource(pman_config_path) as f:
         app.config['pman-config'] = json.load(f)
     print("Loaded config:", pman_config_name)
