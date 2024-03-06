@@ -1,4 +1,5 @@
 from flask import Blueprint, current_app, render_template, request, flash, jsonify, redirect, url_for
+import pdb
 from .pman_blueprints.csv_utils import read_csv
 from .scheduler import remove_expired_jobs_and_rewrite_csv
 import json
@@ -60,3 +61,9 @@ def releaseScheduler():
     headers = data[0]
     rows = data[1:]
     return render_template('release-scheduler/release-scheduler.html', headers=headers, rows=rows,bad_format_text=current_app.config['bad-format-text'])
+
+@views.route('/release-scheduler/release-schedule')
+def releaseSchedule():
+    # show the scheduler table.
+    job_list = [(job.id, job.next_run_time.strftime('%B %d, %Y at %I:%M %p %Z')) for job in current_app.scheduler.get_jobs()]
+    return render_template('release-scheduler/release-schedule.html', job_list=job_list)
