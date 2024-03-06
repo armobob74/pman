@@ -14,6 +14,9 @@ def inject_config():
 
 @views.route('/')
 def index():
+    if 'home_page' in current_app.config['pman-config']:
+        homepath = current_app.config['pman-config']['home_page']
+        return redirect(homepath)
     return render_template('index.html')
 
 @views.route('/settings')
