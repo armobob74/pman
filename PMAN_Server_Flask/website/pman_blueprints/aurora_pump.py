@@ -64,7 +64,8 @@ def status():
     known_chars = busy_chars + ready_chars 
     command = format_command('Q')
     response = current_app.connection.send(command, immediate=True)
-    response = response.decode()
+    # first byte can not be decoded in utf-8
+    response = response[1:-3].decode()
     status = 'Error Parsing Response'
     for char in response:
         if char in known_chars:
