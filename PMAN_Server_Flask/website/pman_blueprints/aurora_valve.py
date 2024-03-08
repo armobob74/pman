@@ -23,4 +23,3 @@ def switch_to_valve(port_number):
     command = format_command(cmd=b'\x44', arg1=to_port) 
     response = current_app.connection.send(command, immediate=True)
     return {'status':'ok','message':response.hex()}
-

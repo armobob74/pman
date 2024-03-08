@@ -2,6 +2,9 @@ from flask import Blueprint, request, current_app
 from functools import wraps
 import json
 
+busy_chars = '@ABCDFGIJKO'
+ready_chars='`abcdfgijko'
+
 def extract_pman_args(f):
     """
     Extract the pman args from the request and plug them into the decorated function
@@ -18,8 +21,6 @@ def statusParserHamiltonAurora(statusChar):
     Parse the status char in hamilton and aurora pumps 
     This assumes that the Aurora uses the same status chars as Hamilton -- definitely double check that
     """
-    busy_chars = '@ABCDFGIJKO'
-    ready_chars='`abcdfgijko'
     if statusChar in busy_chars:
         readiness = 'Busy'
     elif statusChar in ready_chars:
