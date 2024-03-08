@@ -1,7 +1,7 @@
 from flask import current_app, request, Blueprint
 import pdb
 from math import log
-from .utils import extract_pman_args
+from .utils import extract_pman_args, statusParserHamiltonAurora, busy_chars, ready_chars
 
 
 ADDR = '1'
@@ -48,7 +48,6 @@ def is_busy():
     command = format_command('Q')
     response = current_app.connection.send(command, immediate=True)
     response = parse_response(response)
-        
     if '@' in response:
         current_app.logger.debug(f"Determined pump is busy")
         return True
@@ -59,6 +58,19 @@ def is_busy():
         errormsg = "Pump responded to query incorrectly -- is it busy or not? (check debug log)"
         current_app.logger.error(errormsg)
         raise ValueError(errormsg)
+
+@aurora_pump.route("/status", methods=["GET"])
+def status():
+    known_chars = busy_chars + ready_chars 
+    command = format_command('Q')
+    response = current_app.connection.send(command, immediate=True)
+    response = response.decode()
+    status = 'Error Parsing Response'
+    for char in response:
+        if char in known_chars:
+            status = statusParserHamiltonAurora(char)
+            break
+    return {'status':status,'message':''}
 
 @aurora_pump.route("/transfer", methods=["POST"])
 @extract_pman_args
