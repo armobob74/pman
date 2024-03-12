@@ -1,0 +1,10 @@
+{
+  "port": 5109,
+  "serial_port":"/dev/ttyUSB0",
+  "home_page":"/release-scheduler/release-scheduler",
+  "read_until":"\n",
+  "scheduler_tablepath":"csv/test.csv",
+  "sidecards": [
+	  ["Release Scheduler", "/release-scheduler/release-scheduler"]
+  ]
+}
