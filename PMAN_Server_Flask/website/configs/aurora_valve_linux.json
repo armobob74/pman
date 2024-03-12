@@ -1,0 +1,8 @@
+{
+  "port": 5000,
+  "serial_port":"/dev/ttyUSB0",
+  "home_page":"/",
+  "sidecards": [
+	  ["Switch to Port", "/aurora-valve/switch-to-port"]
+  ]
+}
