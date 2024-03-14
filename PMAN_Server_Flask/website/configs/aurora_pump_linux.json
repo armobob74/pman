@@ -1,0 +1,12 @@
+{
+  "port": 5001,
+  "serial_port": "/dev/ttyUSB1",
+  "home_page": "/",
+  "sidecards": [
+    ["Transfer", "/aurora-pump/transfer"],
+    ["Set Velocity", "/aurora-pump/set-velocity"],
+    ["Control", "/aurora-pump/control"],
+    ["Custom", "/aurora-pump/custom"],
+    ["Bubble Buster", "/aurora-pump/bubble-bust-transfer"]
+  ]
+}
