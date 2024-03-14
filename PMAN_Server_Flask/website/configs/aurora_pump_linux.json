@@ -1,6 +1,7 @@
 {
   "port": 5001,
-  "serial_port": "/dev/ttyUSB1",
+  "read_until": "\n",
+  "serial_port": "/dev/ttyUSB0",
   "home_page": "/",
   "sidecards": [
     ["Transfer", "/aurora-pump/transfer"],

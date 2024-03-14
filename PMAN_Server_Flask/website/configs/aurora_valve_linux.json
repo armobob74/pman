@@ -1,5 +1,6 @@
 {
   "port": 5000,
+  "read_until": "\n",
   "serial_port":"/dev/ttyUSB0",
   "home_page":"/",
   "sidecards": [
