@@ -1,11 +1,12 @@
 from flask import current_app, request, Blueprint
 import pdb
-from math import log
+from math import log, floor
 from .utils import extract_pman_args, statusParserHamiltonAurora, busy_chars, ready_chars
 
 
 ADDR = '1'
 aurora_pump = Blueprint('aurora_pump',__name__, url_prefix='/pman/aurora-pump')
+NUM_VALVE_PORTS = 12;
 
 def format_command(data):
     """ Doesn't include R, which is needed to run action commands """
@@ -25,17 +26,18 @@ def transfer_command_string(from_port, to_port, volume):
     """
     Copied from Hamilton server tbh
     """
+
     full_transfers = ''
     if volume > max_draw_volume:
         loops = int(volume // max_draw_volume)
-        full_transfers = f'gI{from_port}A{max_height}O{to_port}A0G{loops}'
+        full_transfers = f'gI{from_port}A{max_height}I{to_port}A0G{loops}'
 
     remainder = volume % max_draw_volume
     partial_transfer_steps = int((remainder / syringe_size) * resolution)
     if remainder == 0:
         partial_transfers = ''
     else:
-        partial_transfers = f"I{from_port}A{partial_transfer_steps}O{to_port}A0"
+        partial_transfers = f"I{from_port}A{partial_transfer_steps}I{to_port}A0"
     return partial_transfers + full_transfers + 'R'
 
 def parse_response(response_bytes):
@@ -58,6 +60,58 @@ def is_busy():
         errormsg = "Pump responded to query incorrectly -- is it busy or not? (check debug log)"
         current_app.logger.error(errormsg)
         raise ValueError(errormsg)
+
+def get_max_velocity():
+    # this is the max velocity query command
+    command = format_command(f"?2") 
+    # full_response is something like "/0`1400" where 1400 is the actual velocity
+    full_response = parse_response(current_app.connection.send(command, immediate=True))
+    actual_velocity = full_response[3:]
+    return int(actual_velocity)
+
+def get_valve_position():
+    # this is the valve position command
+    command = format_command(f"?6") 
+    # full_response is something like "/0`1400" where 1400 is the actual velocity
+    full_response = parse_response(current_app.connection.send(command, immediate=True))
+    valve_position = full_response[3:]
+    return int(valve_position)
+
+
+def estimate_valve_turn_time(from_port, to_port):
+    """ estimate how long it takes rotary valve to turn, assuming it always goes clockwise """
+    distance_in_valves = (to_port - from_port) % NUM_VALVE_PORTS
+
+    # these values determined experimentally
+    m = 0.24657 
+    b = 0.22345
+
+    return m * distance_in_valves + b
+
+
+def estimate_transfer_time(from_port, to_port, volume):
+    """ just a very rough estimate of transfer time """
+
+    current_position = get_valve_position()
+    # assume it's basically instant acceleration, even tho this is not the case
+    velocity = get_max_velocity()
+
+    initial_valve_turn = estimate_valve_turn_time(current_position, from_port)
+
+    steps = vol_to_steps(volume)
+    total_pull_time = steps / velocity
+    total_push_time = total_pull_time
+    valve_single_turn_time = estimate_valve_turn_time(from_port,to_port)
+    # needed if multiple pulls
+    valve_round_trip_time = valve_single_turn_time + estimate_valve_turn_time(to_port, from_port) 
+
+    num_syringeloads = volume / syringe_size
+    num_round_trips = floor(num_syringeloads)
+
+    total_valve_time = initial_valve_turn + valve_single_turn_time + num_round_trips * valve_round_trip_time
+    total_syringe_time = total_pull_time + total_push_time
+    return total_valve_time + total_syringe_time
+    
 
 @aurora_pump.route("/status", methods=["GET"])
 def status():
@@ -129,8 +183,7 @@ def custom(s):
     response = current_app.connection.send(command, immediate=True)
     return {'status':'ok','message':parse_response(response)}
 
-@aurora_pump.route("/is-busy", methods=["POST"])
-@extract_pman_args
+@aurora_pump.route("/is-busy", methods=["POST","GET"])
 def isBusy():
     current_app.logger.debug(f"Called aurora isBusy()")
     status = is_busy()
@@ -139,6 +192,28 @@ def isBusy():
     else:
         message = 'pump is available'
     return {'status':status,'message':message}
+
+@aurora_pump.route("/get-max-velocity", methods=["POST","GET"])
+def getMaxVelocity():
+    current_app.logger.debug(f"Called aurora getMaxVelocity()")
+    vel = get_max_velocity()
+    return {'status':'ok','message':vel}
+
+@aurora_pump.route("/get-valve-position", methods=["POST","GET"])
+def getValvePosition():
+    """ get the position of the rotary valve """
+    current_app.logger.debug(f"Called aurora getMaxPosition()")
+    vel = get_valve_position()
+    return {'status':'ok','message':vel}
+
+@aurora_pump.route("/estimate-transfer-time", methods=["POST"])
+@extract_pman_args
+def estimateTransferTime(from_port, to_port, volume):
+    from_port = float(from_port)
+    to_port = float(to_port)
+    volume = float(volume)
+    current_app.logger.debug(f"Called aurora estimateTransferTime({from_port},{to_port},{volume})")
+    return {'status':'ok','message':estimate_transfer_time(from_port,to_port,volume)}
 
 @aurora_pump.route("/bubble-bust-transfer", methods=["POST"])
 @extract_pman_args
