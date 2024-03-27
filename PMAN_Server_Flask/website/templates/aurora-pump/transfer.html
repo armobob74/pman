@@ -1,5 +1,6 @@
 {% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
 <h2>Transfer</h2>
+<div id="timer-holder"> <span>Estimated Time:</span> <span id="timer">NA</span> <span>seconds</span></div>
 <form id="transferForm">
   <label for="from_port">From Port:</label>
   <input type="text" id="from_port" name="from_port"><br><br>
@@ -11,8 +12,39 @@
 </form>
 {% endblock %} {% block scripts %}
 <script>
+	async function estimateTime(){
+		const from_port = document.getElementById("from_port").value;
+		const to_port = document.getElementById("to_port").value;
+		const volume = document.getElementById("volume").value;
+		if (from_port && to_port && volume) {
+			 let ret = await fetchPOST(
+				'/pman/aurora-pump/estimate-transfer-time',
+				{'args':[from_port,to_port,volume]}
+			)
+			return JSON.parse(ret)['message']
+		}
+		return 0
+	} 
+
+	async function startTickingTimer(){
+    	const timer = document.getElementById('timer');
+	    let timeRemaining = parseFloat(timer.innerText);
+	    const interval = setInterval(function() {
+	        timeRemaining -= 0.1;
+	        if (timeRemaining <= 0) {
+	            clearInterval(interval);
+	        }
+	        timer.innerText = timeRemaining.toFixed(1);
+	    }, 100);
+	}
+
+
   document.getElementById("transferForm").addEventListener("submit", async function(event) {
     event.preventDefault();
+    const time_estimate = await estimateTime();
+    document.getElementById('timer').innerText = time_estimate.toFixed(2);
+    startTickingTimer() 	
+
     const from_port = document.getElementById("from_port").value;
     const to_port = document.getElementById("to_port").value;
     const volume = document.getElementById("volume").value;
