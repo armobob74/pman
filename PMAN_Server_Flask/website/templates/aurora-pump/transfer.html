@@ -33,9 +33,9 @@
 	        timeRemaining -= 0.1;
 	        if (timeRemaining <= 0) {
 	            clearInterval(interval);
-		} else {
+		    timeRemaining = 0;
+		} 
 	        timer.innerText = timeRemaining.toFixed(1);
-		}
 	    }, 100);
 	}
 
