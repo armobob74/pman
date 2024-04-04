@@ -213,7 +213,12 @@ def estimateTransferTime(from_port, to_port, volume):
     to_port = float(to_port)
     volume = float(volume)
     current_app.logger.debug(f"Called aurora estimateTransferTime({from_port},{to_port},{volume})")
-    return {'status':'ok','message':estimate_transfer_time(from_port,to_port,volume)}
+    # if app is not live, it's in simulation mode
+    if current_app.connection.is_live:
+        transfer_estimate = estimate_transfer_time(from_port,to_port,volume)
+    else:
+        transfer_estimate = 0.0
+    return {'status':'ok','message':transfer_estimate}
 
 @aurora_pump.route("/bubble-bust-transfer", methods=["POST"])
 @extract_pman_args

@@ -51,9 +51,11 @@ class Connection:
         try:
             self.serial = serial.Serial(serial_port, baud_rate)
             print(f"### connected to port {serial_port} ###")
+            self.is_live = True
         except SerialException:
             print(f"### Could not open serial port {serial_port}, running in no-serial mode ###")
             self.serial = MockSerial()
+            self.is_live = False
         self.interrupt_flag = False
         self.lock = Lock()  # for thread safety
         self.command_queue = Queue()
