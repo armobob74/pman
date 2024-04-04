@@ -1,17 +1,24 @@
 from flask import current_app, request, Blueprint
+import json
 import pdb
 from math import log, floor
 from .utils import extract_pman_args, statusParserHamiltonAurora, busy_chars, ready_chars
 
 
-ADDR = '1'
+default_addr = '1'
 aurora_pump = Blueprint('aurora_pump',__name__, url_prefix='/pman/aurora-pump')
 NUM_VALVE_PORTS = 12;
 
 def format_command(data):
     """ Doesn't include R, which is needed to run action commands """
+    addr = default_addr
+    if request:
+        request_data = json.loads(request.data)
+        if 'kwargs' in request_data:
+            addr = request_data['kwargs'].get('address',default_addr)
     current_app.logger.debug(f"Formatting command data: {data}")
-    return f'/{ADDR}{data}\r'.encode()
+
+    return f'/{addr}{data}\r'.encode()
 
 resolution = 6000 # steps
 max_draw_volume = 25 #mL
@@ -42,6 +49,10 @@ def transfer_command_string(from_port, to_port, volume):
 
 def parse_response(response_bytes):
     # first byte can not be decoded in utf-8
+    if not current_app.connection.is_live:
+        current_app.logger.debug(f"No response needed: port not connected")
+        return ''
+
     response_data = response_bytes[1:-3].decode()
     current_app.logger.debug(f"Got response: {response_data}")
     return response_data
