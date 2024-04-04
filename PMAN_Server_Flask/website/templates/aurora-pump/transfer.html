@@ -3,13 +3,16 @@
 <div id="timer-holder"> <span>Time Remaining:</span> <span id="timer">0.0</span> <span>seconds</span></div>
 <div id="progress-bar"> </div>
 <form id="transferForm">
+  <label for="address">Address</label>
+  <input type="text" id="address" name="address" value="1"><br>
   <label for="from_port">From Port:</label>
-  <input type="text" id="from_port" name="from_port"><br><br>
+  <input type="text" id="from_port" name="from_port"><br>
   <label for="to_port">To Port:</label>
-  <input type="text" id="to_port" name="to_port"><br><br>
+  <input type="text" id="to_port" name="to_port"><br>
   <label for="volume">Volume:</label>
-  <input type="text" id="volume" name="volume"><br><br>
+  <input type="text" id="volume" name="volume"><br>
   <input type="submit" value="Submit">
+
 </form>
 {% endblock %} {% block scripts %}
 <script>
@@ -17,10 +20,16 @@
 		const from_port = document.getElementById("from_port").value;
 		const to_port = document.getElementById("to_port").value;
 		const volume = document.getElementById("volume").value;
+		const address = document.getElementById("address").value;
 		if (from_port && to_port && volume) {
 			 let ret = await fetchPOST(
 				'/pman/aurora-pump/estimate-transfer-time',
-				{'args':[from_port,to_port,volume]}
+				{
+					'args':[from_port,to_port,volume],
+					'kwargs':{
+						'address':address,
+					}
+				}
 			)
 			return JSON.parse(ret)['message']
 		}
@@ -57,8 +66,13 @@
     const volume = document.getElementById("volume").value;
     await apTransfer([from_port, to_port, volume]);
   });
-  async function apTransfer(args){
-    const response = await fetchPOST("/pman/aurora-pump/transfer", { args: args });
+	async function apTransfer(args){
+    const response = await fetchPOST("/pman/aurora-pump/transfer", {
+	    args: args,
+	    kwargs:{
+		    "address":document.getElementById('address').value
+	    }
+    });
     display(response);
     waitForEnd();
   }
