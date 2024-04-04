@@ -127,7 +127,17 @@ PMAN provides a standardized way for Automation Modules to talk to each other. A
 }
 ```
 
-This structure exists so that it's easy for the front-end to turn a CSV row into an API call.
+This structure exists so that it's easy for the front-end to turn a CSV row into an API call. Sometimes, it's not sufficient though. For example if a user wishes to include optional arguments, list-based parsing falls apart. Fortunately, pman supports an optional `kwargs` parameter for situations like that.
+
+```json
+{
+  "args": ["arg1", "arg2", "etc"],
+  "kwargs": {
+    "address": "A",
+    "speed": 120
+  }
+}
+```
 
 The standard response looks like this:
 
@@ -335,6 +345,7 @@ def create_app():
 ```
 
 You can use this in your `PMAN` blueprint like so:
+
 ```python
 # ... rest of import section ... #
 from flask import current_app
