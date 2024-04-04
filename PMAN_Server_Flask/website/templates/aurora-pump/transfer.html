@@ -1,6 +1,7 @@
 {% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
 <h2>Transfer</h2>
-<div id="timer-holder"> <span>Estimated Time:</span> <span id="timer">NA</span> <span>seconds</span></div>
+<div id="timer-holder"> <span>Time Remaining:</span> <span id="timer">0.0</span> <span>seconds</span></div>
+<div id="progress-bar"> </div>
 <form id="transferForm">
   <label for="from_port">From Port:</label>
   <input type="text" id="from_port" name="from_port"><br><br>
@@ -27,16 +28,21 @@
 	} 
 
 	async function startTickingTimer(){
-    	const timer = document.getElementById('timer');
-	    let timeRemaining = parseFloat(timer.innerText);
-	    const interval = setInterval(function() {
-	        timeRemaining -= 0.1;
-	        if (timeRemaining <= 0) {
-	            clearInterval(interval);
-		    timeRemaining = 0;
-		} 
-	        timer.innerText = timeRemaining.toFixed(1);
-	    }, 100);
+		const timer = document.getElementById('timer');
+		const progress_bar = document.getElementById('progress-bar');
+		const initial_time = parseFloat(timer.innerText)  + 0.0001;
+		let time_remaining = parseFloat(timer.innerText);
+		const interval = setInterval(function() {
+			time_remaining -= 0.01;
+			if (time_remaining <= 0) {
+				clearInterval(interval);
+				time_remaining = 0;
+			} 
+			timer.innerText = time_remaining.toFixed(1);
+		        progress_bar.style.width = `${100*time_remaining / initial_time}%`
+		// interval must be 10 ms for smooth progress bar motion
+		}, 10);
+
 	}
 
 

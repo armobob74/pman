@@ -207,3 +207,10 @@ input.error {
 .unsaved-change {
   color: $highlight-color;
 }
+
+#progress-bar{
+	margin:0;
+	background-color:purple;
+	padding-top:1em;
+	width:0;
+}
