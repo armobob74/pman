@@ -200,11 +200,15 @@ def custom(s):
 @aurora_pump.route("/is-busy", methods=["POST","GET"])
 def isBusy():
     current_app.logger.debug(f"Called aurora isBusy()")
-    status = is_busy()
-    if status:
-        message = 'pump is busy'
-    else:
-        message = 'pump is available'
+    try:
+        status = is_busy()
+        if status:
+            message = 'pump is busy'
+        else:
+            message = 'pump is available'
+    except TimeoutError:
+        status = 'Error'
+        message = 'Serial request timeout. Is address correct?'
     return {'status':status,'message':message}
 
 @aurora_pump.route("/get-max-velocity", methods=["POST","GET"])
