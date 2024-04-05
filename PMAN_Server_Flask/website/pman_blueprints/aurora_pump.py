@@ -73,7 +73,6 @@ def is_busy():
     else:
         errormsg = "Pump responded to query incorrectly -- is it busy or not? (check debug log)"
         current_app.logger.error(errormsg)
-        pdb.set_trace()
         raise ValueError(errormsg)
 
 def get_max_velocity():
