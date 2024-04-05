@@ -4,7 +4,6 @@ import pdb
 from math import log, floor
 from .utils import extract_pman_args, statusParserHamiltonAurora, busy_chars, ready_chars
 
-
 default_addr = '1'
 aurora_pump = Blueprint('aurora_pump',__name__, url_prefix='/pman/aurora-pump')
 NUM_VALVE_PORTS = 12;
@@ -67,9 +66,14 @@ def is_busy():
     elif '`' in response:
         current_app.logger.debug(f"Determined pump is NOT busy")
         return False
+    elif response == '':
+        errormsg = "Query timed out -- are you using the right address?"
+        current_app.logger.error(errormsg)
+        raise TimeoutError(errormsg)
     else:
         errormsg = "Pump responded to query incorrectly -- is it busy or not? (check debug log)"
         current_app.logger.error(errormsg)
+        pdb.set_trace()
         raise ValueError(errormsg)
 
 def get_max_velocity():
