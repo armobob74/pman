@@ -2,18 +2,27 @@
 <h2>Set Velocity</h2>
 <form id="velocityform">
   <label for="velocity">Velocity (2.5 - 1400 mL/min)</label>
-  <input type="text" id="velocity" name="velocity"><br><br>
-  <input type="submit" value="Submit">
+  <input type="text" id="velocity" name="velocity" /><br /><br />
+  <label for="address">Address:</label>
+  <input type="text" id="address" name="address" value="1" />
+  <input type="submit" value="Submit" />
 </form>
 {% endblock %} {% block scripts %}
 <script>
-  document.getElementById("velocityform").addEventListener("submit", async function(event) {
-    event.preventDefault();
-    const velocity = document.getElementById("velocity").value;
-    await setVelocity([velocity]);
-  });
-  async function setVelocity(args){
-    const response = await fetchPOST("/pman/aurora-pump/set-velocity", { args: args });
+  document
+    .getElementById("velocityform")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const velocity = document.getElementById("velocity").value;
+      await setVelocity([velocity]);
+    });
+  async function setVelocity(args) {
+    const response = await fetchPOST("/pman/aurora-pump/set-velocity", {
+      args: args,
+      kwargs: {
+        address: document.getElementById("address").value,
+      },
+    });
     display(response);
   }
 </script>

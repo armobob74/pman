@@ -42,8 +42,14 @@
     </div>
   </div>
   <div class="grid-item">
-	  <button type="button" class="execute" onclick="init()">Initialize</button>
-	  <button type="button" class="execute" onclick="isBusy()">Check Is Busy</button>
+    <button type="button" class="execute" onclick="init()">Initialize</button>
+    <button type="button" class="execute" onclick="isBusy()">
+      Check Is Busy
+    </button>
+  </div>
+  <div class="grid-item">
+    <label for="address">Address:</label>
+    <input type="text" value="1" name="address" id="address" />
   </div>
 </div>
 
@@ -58,12 +64,18 @@
   async function init() {
     const response = await fetchPOST("/pman/aurora-pump/custom", {
       args: ["ZR"],
+      kwargs: {
+        address: document.getElementById("address").value,
+      },
     });
     display(response);
   }
   async function switchToPort(n) {
     const response = await fetchPOST("/pman/aurora-pump/switch-to-port", {
       args: [n],
+      kwargs: {
+        address: document.getElementById("address").value,
+      },
     });
     display(response);
   }
@@ -74,6 +86,9 @@
       const volume = document.getElementById("pull-volume").value;
       const response = await fetchPOST("/pman/aurora-pump/pull", {
         args: [volume],
+        kwargs: {
+          address: document.getElementById("address").value,
+        },
       });
       display(response);
     });
@@ -84,6 +99,9 @@
       const volume = document.getElementById("push-volume").value;
       const response = await fetchPOST("/pman/aurora-pump/push", {
         args: [volume],
+        kwargs: {
+          address: document.getElementById("address").value,
+        },
       });
       display(response);
     });

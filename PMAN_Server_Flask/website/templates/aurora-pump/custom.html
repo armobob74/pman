@@ -2,18 +2,27 @@
 <h2>Custom</h2>
 <form id="customForm">
   <label for="custom_string">Custom String:</label>
-  <input type="text" id="custom_string" name="custom_string">
+  <input type="text" id="custom_string" name="custom_string" />
+  <label for="address">Address:</label>
+  <input type="text" id="address" name="address" value="1"/>
   <button type="submit">Submit</button>
 </form>
 {% endblock %} {% block scripts %}
 <script>
-  document.getElementById("customForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-    const custom_string = document.getElementById("custom_string").value;
-    await apCustom([custom_string]);
-  });
-  async function apCustom(args){
-    const response = await fetchPOST("/pman/aurora-pump/custom", { args: args });
+  document
+    .getElementById("customForm")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const custom_string = document.getElementById("custom_string").value;
+      await apCustom([custom_string]);
+    });
+  async function apCustom(args) {
+    const response = await fetchPOST("/pman/aurora-pump/custom", {
+      args: args,
+      kwargs: {
+        address: document.getElementById("address").value,
+      },
+    });
     display(response);
   }
 </script>

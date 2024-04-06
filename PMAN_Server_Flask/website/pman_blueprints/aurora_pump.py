@@ -207,7 +207,7 @@ def isBusy():
         else:
             message = 'pump is available'
     except TimeoutError:
-        status = 'Error'
+        status = 'error'
         message = 'Serial request timeout. Is address correct?'
     return {'status':status,'message':message}
 
