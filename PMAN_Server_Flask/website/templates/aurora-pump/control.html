@@ -46,6 +46,7 @@
     <button type="button" class="execute" onclick="isBusy()">
       Check Is Busy
     </button>
+    <button type="button" class="hardstop" onclick="hardstop()">Hardstop</button>
   </div>
   <div class="grid-item">
     <label for="address">Address:</label>
@@ -105,5 +106,14 @@
       });
       display(response);
     });
+  async function hardstop() {
+    const response = await fetchPOST("/pman/aurora-pump/custom", {
+      args: ["TR"],
+      kwargs: {
+        address: document.getElementById("address").value,
+      },
+    });
+    display(response);
+  }
 </script>
 {% endblock%}

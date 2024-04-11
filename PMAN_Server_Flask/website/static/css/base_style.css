@@ -119,8 +119,8 @@ button.save {
   width: 50%; }
 
 button:hover {
-  background-color: #a503fc;
-  border-color: #a503fc;
+  background-color: #b735fd;
+  border-color: #b735fd;
   color: white; }
 
 button.add-btn {
@@ -133,6 +133,17 @@ button.execute {
   button.execute:not(:hover) {
     background-color: #a503fc;
     border-color: #a503fc; }
+
+button.hardstop {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: white; }
+  button.hardstop:not(:hover) {
+    background-color: #961414;
+    border-color: #961414; }
+  button.hardstop:hover {
+    background-color: #c31a1a;
+    border-color: #c31a1a; }
 
 div.column {
   display: flex;

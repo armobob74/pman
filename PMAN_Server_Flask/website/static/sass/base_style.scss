@@ -11,6 +11,7 @@ $form-bg-color: $sidecard-bg-color;
 $input-bg-color: hsl(0, 0, 60%);
 
 $error-color: rgb(217, 76, 83);
+$hardstop-color: rgb(150, 20, 20);
 $warning-color: rgb(237, 229, 71);
 
 $window-border: dotted 1px $border-color;
@@ -79,7 +80,7 @@ body {
     resize: vertical;
     flex-shrink: 0;
     display: flex;
-    padding:1em;
+    padding: 1em;
     flex-direction: column;
     form {
       display: flex;
@@ -157,8 +158,8 @@ button.save {
 }
 
 button:hover {
-  background-color: $primary-btn-bg-color;
-  border-color: $primary-btn-bg-color;
+  background-color: lighten($primary-btn-bg-color, 10);
+  border-color: lighten($primary-btn-bg-color, 10);
   color: white;
 }
 
@@ -173,6 +174,20 @@ button.execute {
   &:not(:hover) {
     background-color: $primary-btn-bg-color;
     border-color: $primary-btn-bg-color;
+  }
+}
+
+button.hardstop {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: white;
+  &:not(:hover) {
+    background-color: $hardstop-color;
+    border-color: $hardstop-color;
+  }
+  &:hover {
+    background-color: lighten($hardstop-color,10);
+    border-color: lighten($hardstop-color,10);
   }
 }
 
@@ -208,9 +223,9 @@ input.error {
   color: $highlight-color;
 }
 
-#progress-bar{
-	margin:0;
-	background-color:purple;
-	padding-top:1em;
-	width:0;
+#progress-bar {
+  margin: 0;
+  background-color: purple;
+  padding-top: 1em;
+  width: 0;
 }
