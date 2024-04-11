@@ -33,7 +33,7 @@ def transfer_command_string(from_port, to_port, volume):
     syringe_size = current_app.config['pman-config']['instrument_info']['syringe_size']
     max_height = vol_to_steps(syringe_size)
     full_transfers = ''
-    if volume > syringe_size:
+    if volume >= syringe_size:
         loops = int(volume // syringe_size)
         full_transfers = f'gI{from_port}A{max_height}I{to_port}A0G{loops}'
 
