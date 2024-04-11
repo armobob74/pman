@@ -57,7 +57,29 @@ def create_app(pman_config_name):
             read_until=pman_config.get('read_until', None)
         )
     app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(aurora_valve)
-    app.register_blueprint(aurora_pump)
-    app.register_blueprint(release_scheduler)
+
+    # register only the blueprints that the config says are necesary
+    # we also check for any special config variables that the blueprints may need
+    optional_blueprints = pman_config.get('blueprints',[])
+    if 'aurora_valve' in optional_blueprints:
+        app.register_blueprint(aurora_valve)
+    if 'aurora_pump' in optional_blueprints:
+        register_aurora_pump_blueprint(app)
+    if 'release_scheduler' in optional_blueprints:
+        app.register_blueprint(release_scheduler)
     return app
+
+def register_aurora_pump_blueprint(app):
+    """ Aurora pump blueprint requires some special config variables to be set. Let's check for them in __init__ instead of waiting until function call time. """
+    pman_config = app.config['pman-config']
+    instrument_info = pman_config.get('instrument_info',{})
+    # instrument info is information about the physical instrument itself, rather than pman networking info
+    if not instrument_info:
+        raise ValueError('Expected "instrument_info" section in pman_config for Aurora Pump blueprint')
+
+    required_keys = ["num_valve_ports", "resolution", "syringe_size"]
+    for key in required_keys:
+        if not key in instrument_info:
+            raise ValueError(f'Expected "{key}" key in "instrument_info" for Aurora Pump blueprint')
+
+    app.register_blueprint(aurora_pump)

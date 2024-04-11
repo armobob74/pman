@@ -3,11 +3,17 @@
   "read_until": "\n",
   "serial_port": "/dev/ttyUSB0",
   "home_page": "/",
+  "blueprints": ["aurora_pump"],
   "sidecards": [
     ["Transfer", "/aurora-pump/transfer"],
     ["Set Velocity", "/aurora-pump/set-velocity"],
     ["Control", "/aurora-pump/control"],
     ["Custom", "/aurora-pump/custom"],
     ["Bubble Buster", "/aurora-pump/bubble-bust-transfer"]
-  ]
+  ],
+  "instrument_info": {
+    "num_valve_ports": 12,
+    "resolution": 6000,
+    "syringe_size": 10
+  }
 }

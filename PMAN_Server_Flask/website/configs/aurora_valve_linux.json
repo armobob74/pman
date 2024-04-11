@@ -3,7 +3,9 @@
   "read_until": "\n",
   "serial_port":"/dev/ttyUSB0",
   "home_page":"/",
+  "blueprints":["aurora_valve"],
   "sidecards": [
 	  ["Switch to Port", "/aurora-valve/switch-to-port"]
   ]
+
 }

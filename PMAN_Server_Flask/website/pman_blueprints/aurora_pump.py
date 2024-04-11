@@ -6,7 +6,6 @@ from .utils import extract_pman_args, statusParserHamiltonAurora, busy_chars, re
 
 default_addr = '1'
 aurora_pump = Blueprint('aurora_pump',__name__, url_prefix='/pman/aurora-pump')
-NUM_VALVE_PORTS = 12;
 
 def format_command(data):
     """ Doesn't include R, which is needed to run action commands """
@@ -19,26 +18,26 @@ def format_command(data):
 
     return f'/{addr}{data}\r'.encode()
 
-resolution = 6000 # steps
-max_draw_volume = 25 #mL
-syringe_size = 25 #mL
 def vol_to_steps(volume):
     """ 6000 steps == 25 mL """
+    resolution = current_app.config['pman-config']['instrument_info']['resolution']
+    syringe_size = current_app.config['pman-config']['instrument_info']['syringe_size']
     steps = float(volume) * resolution / syringe_size
     return int(steps)
 
-max_height = vol_to_steps(max_draw_volume)
 def transfer_command_string(from_port, to_port, volume):
     """
     Copied from Hamilton server tbh
     """
-
+    resolution = current_app.config['pman-config']['instrument_info']['resolution']
+    syringe_size = current_app.config['pman-config']['instrument_info']['syringe_size']
+    max_height = vol_to_steps(syringe_size)
     full_transfers = ''
-    if volume > max_draw_volume:
-        loops = int(volume // max_draw_volume)
+    if volume > syringe_size:
+        loops = int(volume // syringe_size)
         full_transfers = f'gI{from_port}A{max_height}I{to_port}A0G{loops}'
 
-    remainder = volume % max_draw_volume
+    remainder = volume % syringe_size
     partial_transfer_steps = int((remainder / syringe_size) * resolution)
     if remainder == 0:
         partial_transfers = ''
@@ -94,7 +93,8 @@ def get_valve_position():
 
 def estimate_valve_turn_time(from_port, to_port):
     """ estimate how long it takes rotary valve to turn, assuming it always goes clockwise """
-    distance_in_valves = (to_port - from_port) % NUM_VALVE_PORTS
+    num_valve_ports = current_app.config['pman-config']['instrument_info']['num_valve_ports']
+    distance_in_valves = (to_port - from_port) % num_valve_ports
 
     # these values determined experimentally
     m = 0.24657 
@@ -105,6 +105,7 @@ def estimate_valve_turn_time(from_port, to_port):
 
 def estimate_transfer_time(from_port, to_port, volume):
     """ just a very rough estimate of transfer time """
+    syringe_size = current_app.config['pman-config']['instrument_info']['syringe_size']
 
     current_position = get_valve_position()
     # assume it's basically instant acceleration, even tho this is not the case
