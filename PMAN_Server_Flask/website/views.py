@@ -44,8 +44,13 @@ def auroraPumpSetVelocity():
 
 @views.route('/aurora-pump/control')
 def auroraPumpControl():
-    instrument_info = current_app.config['pman-config']['instrument_info']
-    return render_template('aurora-pump/control.html', **instrument_info)
+    DEFAULT_SYRINGE_SPEED = 15 # mL/min
+    pman_config = current_app.config['pman-config']
+    instrument_info = pman_config['instrument_info']
+    syr_speed = DEFAULT_SYRINGE_SPEED
+    if "settings" in pman_config and "max-syringe-speed" in pman_config['settings']:
+        syr_speed = pman_config["settings"]["max-syringe-speed"]
+    return render_template('aurora-pump/control.html',syringe_speed=syr_speed, **instrument_info)
 
 @views.route('/aurora-pump/custom')
 def auroraPumpCustom():

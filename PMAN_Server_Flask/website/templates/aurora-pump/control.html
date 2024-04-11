@@ -42,7 +42,7 @@
     </div>
   </div>
   <div class="grid-item">
-    <button type="button" class="execute" onclick="custom_command('ZR')">Initialize</button>
+    <button type="button" class="execute" onclick="initialize()">Initialize</button>
     <button type="button" class="query" onclick="isBusy()">
       Check Is Busy
     </button>
@@ -58,7 +58,34 @@
 
 {% endblock %} {% block scripts %}
 <script>
-  async function isBusy() {
+	async function initialize(){
+		display("initializing...")
+		await custom_command("ZR");
+		await waitForEnd()
+		display("setting speed to {{syringe_speed}} mL/min")
+		await setSpeed({{syringe_speed}})
+	}
+	async function setSpeed(speed) {
+		const response = await fetchPOST("/pman/aurora-pump/set-velocity", {
+			args: [speed],
+			kwargs: {
+				address: document.getElementById("address").value,
+			},
+		});
+		display(response);
+	}
+  async function waitForEnd(){
+	  let stat = true;
+  	  let response
+	  while(stat == true){
+		  await new Promise(resolve => setTimeout(resolve, 500)); // sleep for 0.5 seconds
+		  response = await fetchPOST("/pman/aurora-pump/is-busy", { args: [] });
+		  response = JSON.parse(response)
+		  stat = response['status']
+	  }
+	  display("done!")
+  }
+	async function isBusy() {
     const response = await fetchPOST("/pman/aurora-pump/is-busy", {
       args: [],
     });

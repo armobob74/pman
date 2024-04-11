@@ -15,5 +15,8 @@
     "num_valve_ports": 12,
     "resolution": 6000,
     "syringe_size": 10
+  },
+  "settings":{
+	  "max-syringe-speed":15
   }
 }
