@@ -44,7 +44,8 @@ def auroraPumpSetVelocity():
 
 @views.route('/aurora-pump/control')
 def auroraPumpControl():
-    return render_template('aurora-pump/control.html')
+    instrument_info = current_app.config['pman-config']['instrument_info']
+    return render_template('aurora-pump/control.html', **instrument_info)
 
 @views.route('/aurora-pump/custom')
 def auroraPumpCustom():
