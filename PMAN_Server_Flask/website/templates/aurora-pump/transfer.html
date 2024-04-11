@@ -16,6 +16,7 @@
 </form>
 {% endblock %} {% block scripts %}
 <script>
+	let interval;
 	async function estimateTime(){
 		const from_port = document.getElementById("from_port").value;
 		const to_port = document.getElementById("to_port").value;
@@ -41,7 +42,7 @@
 		const progress_bar = document.getElementById('progress-bar');
 		const initial_time = parseFloat(timer.innerText)  + 0.0001;
 		let time_remaining = parseFloat(timer.innerText);
-		const interval = setInterval(function() {
+		interval = setInterval(function() {
 			time_remaining -= 0.01;
 			if (time_remaining <= 0) {
 				clearInterval(interval);
@@ -58,6 +59,7 @@
   document.getElementById("transferForm").addEventListener("submit", async function(event) {
     event.preventDefault();
     const time_estimate = await estimateTime();
+    clearInterval(interval)
     document.getElementById('timer').innerText = time_estimate.toFixed(2);
     startTickingTimer() 	
 
@@ -74,7 +76,8 @@
 	    }
     });
     display(response);
-    waitForEnd();
+    await waitForEnd();
+    clearInterval(); 
   }
   async function waitForEnd(){
 	  let stat = true;
