@@ -55,6 +55,14 @@
 
 	}
 
+	async function resetTimer(){
+		clearInterval(interval)
+		const timer = document.getElementById('timer');
+		const progress_bar = document.getElementById('progress-bar');
+		progress_bar.style.width = "0%"
+		timer.innerText = "0.0";
+	}
+
 
   document.getElementById("transferForm").addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -77,7 +85,7 @@
     });
     display(response);
     await waitForEnd();
-    clearInterval(); 
+    resetTimer();
   }
   async function waitForEnd(){
 	  let stat = true;
