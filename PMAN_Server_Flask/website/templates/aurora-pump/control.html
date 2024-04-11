@@ -43,9 +43,11 @@
   </div>
   <div class="grid-item">
     <button type="button" class="execute" onclick="custom_command('ZR')">Initialize</button>
-    <button type="button" class="execute" onclick="isBusy()">
+    <button type="button" class="query" onclick="isBusy()">
       Check Is Busy
     </button>
+    <button type="button" class="query" onclick="custom_command('?')">Query Syringe Position</button>
+    <button type="button" class="query" onclick="custom_command('?6')">Query Valve Position</button>
     <button type="button" class="hardstop" onclick="custom_command('TR')">Hardstop</button>
   </div>
   <div class="grid-item">

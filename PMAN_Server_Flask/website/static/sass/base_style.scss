@@ -12,6 +12,7 @@ $input-bg-color: hsl(0, 0, 60%);
 
 $error-color: rgb(217, 76, 83);
 $hardstop-color: rgb(150, 20, 20);
+$query-color: darken(cyan,20);//rgb(20,20,250);
 $warning-color: rgb(237, 229, 71);
 
 $window-border: dotted 1px $border-color;
@@ -188,6 +189,20 @@ button.hardstop {
   &:hover {
     background-color: lighten($hardstop-color,10);
     border-color: lighten($hardstop-color,10);
+  }
+}
+
+button.query {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: white;
+  &:not(:hover) {
+    background-color: $query-color;
+    border-color: $query-color;
+  }
+  &:hover {
+    background-color: lighten($query-color,10);
+    border-color: lighten($query-color,10);
   }
 }
 

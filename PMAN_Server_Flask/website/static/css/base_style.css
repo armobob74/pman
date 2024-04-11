@@ -145,6 +145,17 @@ button.hardstop {
     background-color: #c31a1a;
     border-color: #c31a1a; }
 
+button.query {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: white; }
+  button.query:not(:hover) {
+    background-color: #009999;
+    border-color: #009999; }
+  button.query:hover {
+    background-color: #00cccc;
+    border-color: #00cccc; }
+
 div.column {
   display: flex;
   flex-direction: column;
