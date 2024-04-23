@@ -7,14 +7,16 @@ from .utils import extract_pman_args, statusParserHamiltonAurora, busy_chars, re
 default_addr = '1'
 aurora_pump = Blueprint('aurora_pump',__name__, url_prefix='/pman/aurora-pump')
 
-def format_command(data):
+def format_command(data, logging=True):
     """ Doesn't include R, which is needed to run action commands """
     addr = default_addr
     if request:
         request_data = json.loads(request.data)
         if 'kwargs' in request_data:
             addr = request_data['kwargs'].get('address',default_addr)
-    current_app.logger.debug(f"Formatting command data: {data}")
+
+    if logging:
+        current_app.logger.debug(f"Formatting command data: {data}")
 
     return f'/{addr}{data}\r'.encode()
 
@@ -56,7 +58,7 @@ def parse_response(response_bytes):
     return response_data
 
 def is_busy():
-    command = format_command('Q')
+    command = format_command('Q', logging=False)
     response = current_app.connection.send(command, immediate=True)
     response = parse_response(response)
     if '@' in response:
