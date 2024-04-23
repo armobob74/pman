@@ -60,10 +60,8 @@ def is_busy():
     response = current_app.connection.send(command, immediate=True)
     response = parse_response(response)
     if '@' in response:
-        current_app.logger.debug(f"Determined pump is busy")
         return True
     elif '`' in response:
-        current_app.logger.debug(f"Determined pump is NOT busy")
         return False
     elif response == '':
         errormsg = "Query timed out -- are you using the right address?"
@@ -200,7 +198,6 @@ def custom(s):
 
 @aurora_pump.route("/is-busy", methods=["POST","GET"])
 def isBusy():
-    current_app.logger.debug(f"Called aurora isBusy()")
     try:
         status = is_busy()
         if status:
