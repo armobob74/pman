@@ -12,7 +12,8 @@
   - [Argument Parsing](#argument-parsing)
   - [Serial Communication](#serial-communication)
   - [Logging](#logging)
-- FLIP(#FLIP)
+- [FLIP](#FLIP)
+  - [Type Table](#flip-types)
 
 <!-- TOC end -->
 
@@ -424,6 +425,9 @@ Here's what to notice about the process above:
 - The example FLIP process includes PMAN commands with specific arguments and URLs for transfer.
 - You can also send normal POST requests, which may be useful for non-PMAN needs.
 - Types are always lowercase
+
+<!-- TOC --><a name="flip-types"></a>
+### Type Table
 
 Below is a table of all possible "type" values and a short explanation of what they do:
 
