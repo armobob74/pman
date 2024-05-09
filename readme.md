@@ -414,7 +414,7 @@ FLIP processes are simple JSON representations that can be run without complex p
     {
       "type": "post",
       "url": "my-notebook-website.com/takenote",
-      body = {"put your request body":"here"}
+      "body": {"put your request body":"here"}
     }
   ]
 }
