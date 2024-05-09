@@ -12,6 +12,7 @@
   - [Argument Parsing](#argument-parsing)
   - [Serial Communication](#serial-communication)
   - [Logging](#logging)
+- FLIP(#FLIP)
 
 <!-- TOC end -->
 
@@ -365,3 +366,70 @@ def myFunc(arg1, arg2):
         current_app.logger.error(message)
     return {'status':status, 'message':message}
 ```
+
+<!-- TOC --><a name="FLIP"></a>
+
+## FLIP
+
+FLexible Interchange of Processes (FLIP) is a standard format for exchanging processes that are made of PMAN commands. For example, a nice, user-friendly Svelte frontend with interactive features can be used to create a FLIP process, then send it to an always-on Flask server that uses APScheduler capabilities to schedule a runtime for the whole process.
+
+FLIP processes are simple JSON representations that can be run without complex parsing. Here's how one looks inside:
+
+```json
+{
+  "type": "series",
+  "steps": [
+    {
+      "type": "parallel",
+      "steps": [
+        {
+          "type": "pman",
+          "args": [2, 10, 0.5],
+          "url": "192.168.68.85:5001/pman/transfer"
+        },
+        {
+          "type": "pman",
+          "args": [4, 10, 0.5],
+          "url": "192.168.68.85:5003/pman/transfer"
+        },
+        {
+          "type": "series",
+          "steps": [
+            {
+              "type": "pman",
+              "args": [1, 2, 0.5],
+              "kwargs": { "address": "A" },
+              "url": "192.168.68.85:5004/pman/transfer"
+            },
+            {
+              "type": "pman",
+              "args": [1, 2, 0.5],
+              "kwargs": { "address": "B" },
+              "url": "192.168.68.85:5004/pman/transfer"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "post",
+      "url": "my-notebook-website.com/takenote",
+      body = {"put your request body":"here"}
+    }
+  ]
+}
+```
+Here's what to notice about the process above:
+- FLIP processes can contain series of steps, including parallel and sequential steps.
+- The example FLIP process includes PMAN commands with specific arguments and URLs for transfer.
+- You can also send normal POST requests, which may be useful for non-PMAN needs.
+- Types are always lowercase
+
+Below is a table of all possible "type" values and a short explanation of what they do:
+
+| Type    | Description                                                         |
+|---------|---------------------------------------------------------------------|
+| series  | Executes "steps" in a series, one after the other                   |
+| parallel| Executes "steps" in parallel, all at the same time                  |
+| pman    | Executes a PMAN command with specified "args" and optional "kwargs" |
+| post    | Sends a normal POST request with a specified "body"                 |
