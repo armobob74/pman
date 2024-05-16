@@ -1,8 +1,6 @@
 import struct
 import serial 
 
-ser = serial.Serial('COM3', timeout=1)
-
 response_len = 8 # we are assuming it's constant but who knows
 
 def float_to_bytes(n):
