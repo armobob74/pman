@@ -1,7 +1,8 @@
 import struct
 import serial 
 
-ser = serial.Serial('/dev/ttyUSB0', timeout=1)
+ser = serial.Serial('COM3', timeout=1)
+stop = True
 
 def float_to_bytes(n):
     br = struct.pack('>f', n)
@@ -28,10 +29,12 @@ def crc_calculation(buf,lenl=None):
     return bytes([LB, HB])
 
 def set_rpm(rpm,addr=b'\x01'):
-    if rpm > 400.0:
-        rpm = 400.0
-    elif rpm < 0:
+    #here set motor to clockwise rotation then.
+    if rpm < 0: 
         rpm = 0
+    elif rpm > 400.0:
+        rpm = 400.0
+    
     cmd = addr + b'\x10\x40\x01\x00\x02\x04' + float_to_bytes(rpm)
     cmd = cmd + crc_calculation(cmd)
     ser.write(cmd)
@@ -109,4 +112,26 @@ def set_runtime(time_ms, addr=b'\x01'):
         addr=addr
     )
 
-set_runtime_cmd = b'\x01\x10\x40\x05\x00\x02\x04\x27\x10\x00\x00\x09\x22'
+def change_to_timemode(addr=b'\x01'):
+    return modbus_write(
+        modbus_function=ModbusFunctions.write_single_coil,
+        start_addr=b'\x00\x04', #address of operation mode
+        num_registers=b'',  # Not needed for writing single coil
+        num_bytes_to_write=b'',  # Not needed for writing single coil
+        bytes_to_write=b'\x00\x00',
+        addr=addr
+    )
+
+def change_to_volumemode(addr=b'\x01'):
+    return modbus_write(
+        modbus_function=ModbusFunctions.write_single_coil,
+        start_addr=b'\x00\x04', #address of operation mode
+        num_registers=b'',  # Not needed for writing single coil
+        num_bytes_to_write=b'',  # Not needed for writing single coil
+        bytes_to_write=b'\xFF\x00',
+        addr=addr
+    )
+
+
+   
+set_runtime_cmd = b'\x01\x10\x40\x05\x00\x02\x04\x27\x10\x00\x00'+uint23_to_bytes(0)
