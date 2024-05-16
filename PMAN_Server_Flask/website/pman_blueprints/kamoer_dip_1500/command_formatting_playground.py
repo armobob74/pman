@@ -2,7 +2,8 @@ import struct
 import serial 
 
 ser = serial.Serial('COM3', timeout=1)
-stop = True
+
+response_len = 8 # we are assuming it's constant but who knows
 
 def float_to_bytes(n):
     br = struct.pack('>f', n)
@@ -38,7 +39,7 @@ def set_rpm(rpm,addr=b'\x01'):
     cmd = addr + b'\x10\x40\x01\x00\x02\x04' + float_to_bytes(rpm)
     cmd = cmd + crc_calculation(cmd)
     ser.write(cmd)
-    return ser.read(8)
+    return ser.read(response_len)
 
 class ModbusFunctions:
         write_single_coil=b'\x05'
@@ -53,7 +54,7 @@ def modbus_write(modbus_function, start_addr, num_registers,num_bytes_to_write,b
     cmd = addr + modbus_function + start_addr + num_registers + num_bytes_to_write + bytes_to_write
     cmd = cmd + crc_calculation(cmd)
     ser.write(cmd)
-    return ser.read(8)
+    return ser.read(response_len)
 
 def motor_start(addr=b'\x01'):
     modbus_function = ModbusFunctions.write_single_coil
@@ -62,7 +63,7 @@ def motor_start(addr=b'\x01'):
     cmd = addr + modbus_function + start_addr + data
     cmd += crc_calculation(cmd)
     ser.write(cmd)
-    return ser.read(8)
+    return ser.read(response_len)
 
 def motor_stop(addr=b'\x01'):
     return modbus_write(
