@@ -38,7 +38,7 @@ def set_rpm(rpm,addr=b'\x01'):
     cmd = addr + b'\x10\x40\x01\x00\x02\x04' + float_to_bytes(rpm)
     cmd = cmd + crc_calculation(cmd)
     ser.write(cmd)
-    return ser.read_until(b'\xc8')
+    return ser.read(8)
 
 class ModbusFunctions:
         write_single_coil=b'\x05'
@@ -53,7 +53,7 @@ def modbus_write(modbus_function, start_addr, num_registers,num_bytes_to_write,b
     cmd = addr + modbus_function + start_addr + num_registers + num_bytes_to_write + bytes_to_write
     cmd = cmd + crc_calculation(cmd)
     ser.write(cmd)
-    return ser.read_until(b'\xc8')
+    return ser.read(8)
 
 def motor_start(addr=b'\x01'):
     modbus_function = ModbusFunctions.write_single_coil
@@ -62,7 +62,7 @@ def motor_start(addr=b'\x01'):
     cmd = addr + modbus_function + start_addr + data
     cmd += crc_calculation(cmd)
     ser.write(cmd)
-    return ser.read_until(b'\xc8')
+    return ser.read(8)
 
 def motor_stop(addr=b'\x01'):
     return modbus_write(
@@ -132,6 +132,4 @@ def change_to_volumemode(addr=b'\x01'):
         addr=addr
     )
 
-
-   
 set_runtime_cmd = b'\x01\x10\x40\x05\x00\x02\x04\x27\x10\x00\x00'+uint23_to_bytes(0)
