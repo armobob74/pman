@@ -42,12 +42,14 @@ def set_rpm(rpm,addr=b'\x01'):
     return ser.read(response_len)
 
 class ModbusFunctions:
-        write_single_coil=b'\x05'
-        write_multiple_registers=b'\x10'
-        read_coils=b'\x01'
-        read_discrete_inputs=b'\x02'
-        read_holding_registers=b'\x03'
-        read_input_registers=b'\x04'
+        read_coils = b'\x01'
+        read_discrete_inputs = b'\x02'
+        read_holding_registers = b'\x03'
+        read_input_registers = b'\x04'
+        write_single_coil = b'\x05'
+        write_single_register = b'\x06'
+        write_multiple_coils = b'\x0F'
+        write_multiple_registers = b'\x10'
 
 def modbus_write(modbus_function, start_addr, num_registers,num_bytes_to_write,bytes_to_write,addr=b'\x01'):
     """ General purpose function used for modbus commands """
@@ -132,5 +134,23 @@ def change_to_volumemode(addr=b'\x01'):
         bytes_to_write=b'\xFF\x00',
         addr=addr
     )
+
+def read_motor_status(addr=b'\x01'):
+    modbus_function = ModbusFunctions.read_coils
+    start_addr = b'\x00\x01'  # Address of the coil register one
+    num_registers = b'\x00\x01'  # Number of registers to read (just one coil)
+    cmd = addr + modbus_function + start_addr + num_registers
+    cmd += crc_calculation(cmd)
+    ser.write(cmd)
+    return ser.read(6)
+
+def read_dir(addr=b'\x01'):
+    modbus_function = ModbusFunctions.read_coils
+    start_addr = b'\x00\x02'    # Address of the coil register one
+    num_registers = b'\x00\x01' 
+    cmd = addr + modbus_function +start_addr + num_registers
+    cmd += crc_calculation(cmd)
+    print(len(cmd))
+    return ser.readline()
 
 set_runtime_cmd = b'\x01\x10\x40\x05\x00\x02\x04\x27\x10\x00\x00'+uint23_to_bytes(0)
