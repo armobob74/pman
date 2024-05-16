@@ -71,6 +71,26 @@ def motor_stop(addr=b'\x01'):
         addr=addr
     )
 
+def motor_clockwise(addr=b'\x01'):
+    return modbus_write(
+        modbus_function=ModbusFunctions.write_single_coil,
+        start_addr=b'\x00\x02',
+        num_registers=b'',  # Not needed for writing single coil
+        num_bytes_to_write=b'',  # Not needed for writing single coil
+        bytes_to_write=b'\xFF\x00',
+        addr=addr
+    )
+
+def motor_counterclockwise(addr=b'\x01'):
+    return modbus_write(
+        modbus_function=ModbusFunctions.write_single_coil,
+        start_addr=b'\x00\x02',
+        num_registers=b'',  # Not needed for writing single coil
+        num_bytes_to_write=b'',  # Not needed for writing single coil
+        bytes_to_write=b'\x00\x00',
+        addr=addr
+    )
+
 def uint23_to_bytes(n):
     """return 4 byte representation of unsigned integer"""
     n = int(n)
@@ -78,8 +98,6 @@ def uint23_to_bytes(n):
     LB = rep[0:2]
     HB = rep[2:] 
     return HB + LB
-
-    
 
 def set_runtime(time_ms, addr=b'\x01'):
     return modbus_write(
