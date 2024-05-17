@@ -77,3 +77,10 @@ def releaseSchedule():
     # show the scheduler table.
     job_list = [(job.id, job.next_run_time.strftime('%B %d, %Y at %I:%M %p %Z')) for job in current_app.scheduler.get_jobs()]
     return render_template('release-scheduler/release-schedule.html', job_list=job_list)
+
+@views.route('/kamoer-peri/control')
+def kamoerPeriControl():
+    pman_config = current_app.config['pman-config']
+    instrument_info = pman_config['instrument_info']
+    addrs = instrument_info['addrs']
+    return render_template('kamoer-peri/control.html',addrs=addrs)

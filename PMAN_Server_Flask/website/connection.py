@@ -2,6 +2,7 @@ from queue import Queue
 import pdb
 from threading import Lock, Thread
 import serial
+from .modbus import ModbusRTU
 from serial.serialutil import SerialException
 
 class MockSerial:
@@ -52,6 +53,7 @@ class Connection:
             self.serial = serial.Serial(serial_port, baud_rate,timeout=1)
             print(f"### connected to port {serial_port} ###")
             self.is_live = True
+            self.modbus = ModbusRTU(self.serial)
         except SerialException:
             print(f"### Could not open serial port {serial_port}, running in no-serial mode ###")
             self.serial = MockSerial()

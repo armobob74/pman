@@ -1,0 +1,14 @@
+{
+  "port": 4980,
+  "serial_port": "/dev/ttyUSB0",
+  "home_page": "/",
+  "blueprints": ["kamoer_peri"],
+  "sidecards": [
+    ["Control", "/kamoer-peri/control"]
+  ],
+  "instrument_info": {
+	  "addrs":[1]
+  },
+  "settings":{
+  }
+}
