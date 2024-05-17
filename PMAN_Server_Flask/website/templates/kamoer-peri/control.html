@@ -38,7 +38,7 @@ span.motor-status {
   <div class="pump-control-card">
 	  <div class="card-header">
 	  <span class="addr">Address: {{addr}}</span>
-	  <span class="motor-status" id="motor-status-{{addr}}" addr="{{addr}}">OFF</span>
+	  <span class="motor-status" id="motor-status-{{addr}}" addr="{{addr}}">off</span>
           </div>
       <label for="direction">Direction</label>
       <select id="direction-{{addr}}" name="direction-{{addr}}">
@@ -47,8 +47,8 @@ span.motor-status {
       </select>
       <label for="rpm">RPM</label>
       <input type="text" value="400" id="rpm-{{addr}}" name="rpm-{{addr}}"/>
-      <button type="button" onclick="start_pump({{addr}})">Start</button>
-      <button type="button" onclick="stop_pump({{addr}})">Stop</button>
+      <button id="start" type="button" onclick="start_pump({{addr}})">Start</button>
+      <button id="stop" type="button" hidden="true" onclick="stop_pump({{addr}})">Stop</button>
   </div>
 {% endfor %}
 </div>
@@ -57,15 +57,32 @@ span.motor-status {
 <script>
 const base_url = '/pman/kamoer-peri'
 const motor_status_spans = document.querySelectorAll('.motor-status')
+const stop_btn = document.getElementById('stop')
+const start_btn = document.getElementById('start')
+
 async function start_pump(addr){
 	let rpm = document.getElementById(`rpm-${addr}`).value
 	let direction = document.getElementById(`direction-${addr}`).value
 	let response = await fetchPOST(`${base_url}/start`, {args:[rpm,direction,addr]})
+	start_btn.hidden = true;
+	stop_btn.hidden = false;
+	stop_btn.disabled = true;
+	// disable for half a sec to prevent overload issue
+	setTimeout(() => {
+	    stop_btn.disabled = false;
+	}, 500);
 	display(response)
 }
 async function stop_pump(addr){
 	let response = await fetchPOST(`${base_url}/stop`,{args:[addr]})
 	display(response)
+	start_btn.hidden = false;
+	stop_btn.hidden = true;
+	// disable for half a sec to prevent overload issue
+	start_btn.disabled = true;
+	setTimeout(() => {
+	    start_btn.disabled = false;
+	}, 500);
 }
 
 setInterval(() => {

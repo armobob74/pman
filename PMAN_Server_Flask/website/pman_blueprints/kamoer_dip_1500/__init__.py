@@ -4,10 +4,15 @@ import pdb
 from .modbus import ModbusRTU, uint32_to_bytes, extract_data_cl, extract_data_hr
 from math import log, floor
 from ..utils import extract_pman_args 
+from serial import SerialException
 
 default_addr = '1'
 
 kamoer_peri = Blueprint('kamoer_peri',__name__, url_prefix='/pman/kamoer-peri')
+
+@kamoer_peri.errorhandler(SerialException)
+def handle_serial_error(e):
+    return {'status': "SerialException", 'message': f"{e}"}, 500
 
 @kamoer_peri.get('/')
 def index():
