@@ -1,7 +1,7 @@
 from flask import current_app, request, Blueprint
 import json
 import pdb
-from .command_formatting_playground import ModbusRTU
+from .modbus import ModbusRTU
 from math import log, floor
 from ..utils import extract_pman_args 
 
