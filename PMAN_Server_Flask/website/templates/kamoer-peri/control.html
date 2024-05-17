@@ -71,17 +71,14 @@ async function stop_pump(addr){
 setInterval(() => {
 	motor_status_spans.forEach((status_span)=>{
 		let addr = status_span.getAttribute('addr')
-		// TODO: call the api and update the status span
-		fetch(`/pman/kamoer-peri/read?addr=${addr}`)
+		fetch(`/pman/kamoer-peri/status?addr=${addr}`)
 		.then(response => response.json())
 		.then(data => {
 			status_span.textContent = data.status;
 		})
 		.catch(error => console.error('Error:', error));
-		
 	})
 }, 1000);
-
 
 {% for addr in addrs %}
 enforceCharset("rpm-{{addr}}","0123456789")

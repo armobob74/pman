@@ -38,22 +38,19 @@ def stop_pump(addr):
     modbus.motor_stop(addr)
     return {'status': "ok", 'message': "Pump Stopped"}
 
-@kamoer_peri.get('/read')
+@kamoer_peri.get('/status')
 def read_status():
     addr_str = request.args.get('addr')  
     addr_int = int(addr_str) 
     addr_bytes = addr_int.to_bytes(1, byteorder='big') 
-    
     modbus = ModbusRTU(current_app.connection.serial)
-    #data = modbus.read_motor_status(addr_bytes) # error here? contains b''
-    #data2 = modbus.read_dir(addr_bytes)''
-    '''if(data != b'' and data2 != b''):
+    data = modbus.read_motor_status(addr_bytes) # error here? contains b''
+    data2 = modbus.read_dir(addr_bytes)
+    if(data != b'' and data2 != b''):
         data_int = extract_data_cl(data)
         data2_int = extract_data_cl(data2)
         if data_int == 1 and data2_int == 1:
-            return {'status': "ON: CLOCKWISE"}
+            return {'status': "clockwise"}
         elif data_int == 1 and data2_int == 0:
-            return {'status': "ON: COUNTERCLOCKWISE"}'''
-    
-   
-    return {'status': "ON"}
+            return {'status': "counterclockwise"}
+    return {'status': "off"}
