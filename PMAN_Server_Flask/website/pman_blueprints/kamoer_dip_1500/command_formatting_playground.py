@@ -7,6 +7,12 @@ def float_to_bytes(n):
     br = struct.pack('>f', n)
     return  br[2:]+ br[0:2]
 
+
+def bytes_to_float(b):
+    reverb = b[2:] + b[:2]
+    return struct.unpack('>f', reverb)[0]
+
+
 def crc_calculation(buf,lenl=None):
     if lenl == None:
         lenl = len(buf)
@@ -144,11 +150,36 @@ def read_motor_status(addr=b'\x01'):
 
 def read_dir(addr=b'\x01'):
     modbus_function = ModbusFunctions.read_coils
-    start_addr = b'\x00\x02'    # Address of the coil register one
-    num_registers = b'\x00\x01' 
-    cmd = addr + modbus_function +start_addr + num_registers
+    start_addr = b'\x00\x02'  # Address of the coil register one
+    num_registers = b'\x00\x01'  # Number of registers to read (just one coil)
+    cmd = addr + modbus_function + start_addr + num_registers
     cmd += crc_calculation(cmd)
-    print(len(cmd))
-    return ser.readline()
+    ser.write(cmd)
+    return ser.read(6)
+
+
+def read_rpm(addr=b'\x01'):
+    modbus_function = ModbusFunctions.read_holding_registers
+    start_addr = b'\x40\x01'  
+    num_registers = b'\x00\x02'  
+    cmd = addr + modbus_function + start_addr + num_registers
+    cmd += crc_calculation(cmd)
+    ser.write(cmd)
+    return ser.read(9)
+
+def read_time(addr=b'\x01'):
+    modbus_function = ModbusFunctions.read_holding_registers
+    start_addr = b'\x40\x05'  
+    num_registers = b'\x00\x02'  
+    cmd = addr + modbus_function + start_addr + num_registers
+    cmd += crc_calculation(cmd)
+    ser.write(cmd)
+    return ser.read(9)
+
+def extract_data_hr(byte):
+    return bytes_to_float(byte[3:7])
+
+def extract_data_cl(byte):
+    return byte[3]
 
 set_runtime_cmd = b'\x01\x10\x40\x05\x00\x02\x04\x27\x10\x00\x00'+uint23_to_bytes(0)
