@@ -41,7 +41,7 @@ class ModbusFunctions:
         write_multiple_coils = b'\x0F'
         write_multiple_registers = b'\x10'
 
-def uint23_to_bytes(n):
+def uint32_to_bytes(n):
     """return 4 byte representation of unsigned integer"""
     n = int(n)
     rep = n.to_bytes(4, 'big')
@@ -123,7 +123,7 @@ class ModbusRTU:
             start_addr=b'\x40\x05',
             num_registers=b'\x00\x02',
             num_bytes_to_write=b'\x04',  # Not needed for writing single coil
-            bytes_to_write=uint23_to_bytes(time_ms),
+            bytes_to_write=uint32_to_bytes(time_ms),
             addr=addr
         )
 
@@ -183,4 +183,4 @@ class ModbusRTU:
         self.ser.write(cmd)
         return self.ser.read(9)
 
-set_runtime_cmd = b'\x01\x10\x40\x05\x00\x02\x04\x27\x10\x00\x00'+uint23_to_bytes(0)
+set_runtime_cmd = b'\x01\x10\x40\x05\x00\x02\x04\x27\x10\x00\x00'+uint32_to_bytes(0)

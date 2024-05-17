@@ -30,20 +30,30 @@ button {
 	  <span class="addr">Address: {{addr}}</span>
       <label for="direction">Direction</label>
       <select id="direction-{{addr}}" name="direction-{{addr}}">
-	      <option value="1">clockwise</option>
-	      <option value="0">counterclockwise</option>
+	      <option value=1>clockwise</option>
+	      <option value=0>counterclockwise</option>
       </select>
       <label for="rpm">RPM</label>
       <input type="text" value="400" id="rpm-{{addr}}" name="rpm-{{addr}}"/>
-      <button type="submit">Start</button>
-      <button type="submit">Stop</button>
+      <button type="button" onclick="start_pump({{addr}})">Start</button>
+      <button type="button" onclick="stop_pump({{addr}})">Stop</button>
   </div>
 {% endfor %}
 </div>
 
 {% endblock %} {% block scripts %}
-<script src="/static/javascript/confirm_ranges.js"></script>
 <script>
+const base_url = '/pman/kamoer-peri'
+async function start_pump(addr){
+	let rpm = document.getElementById(`rpm-${addr}`).value
+	let direction = document.getElementById(`direction-${addr}`).value
+	let response = await fetchPOST(`${base_url}/start`, {args:[rpm,direction,addr]})
+	display(response)
+}
+async function stop_pump(addr){
+	let response = await fetchPOST(`${base_url}/stop`,{args:[addr]})
+	display(response)
+}
 {% for addr in addrs %}
 enforceCharset("rpm-{{addr}}","0123456789")
 enforceRange("rpm-{{addr}}",0,400)
