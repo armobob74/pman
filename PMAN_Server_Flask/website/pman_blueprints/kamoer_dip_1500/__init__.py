@@ -1,7 +1,7 @@
 from flask import current_app, request, Blueprint
 import json
 import pdb
-from .modbus import ModbusRTU, uint32_to_bytes
+from .modbus import ModbusRTU, uint32_to_bytes, extract_data_cl, extract_data_hr
 from math import log, floor
 from ..utils import extract_pman_args 
 
@@ -37,3 +37,23 @@ def stop_pump(addr):
     modbus = ModbusRTU(current_app.connection.serial)
     modbus.motor_stop(addr)
     return {'status': "ok", 'message': "Pump Stopped"}
+
+@kamoer_peri.get('/read')
+def read_status():
+    addr_str = request.args.get('addr')  
+    addr_int = int(addr_str) 
+    addr_bytes = addr_int.to_bytes(1, byteorder='big') 
+    
+    modbus = ModbusRTU(current_app.connection.serial)
+    #data = modbus.read_motor_status(addr_bytes) # error here? contains b''
+    #data2 = modbus.read_dir(addr_bytes)''
+    '''if(data != b'' and data2 != b''):
+        data_int = extract_data_cl(data)
+        data2_int = extract_data_cl(data2)
+        if data_int == 1 and data2_int == 1:
+            return {'status': "ON: CLOCKWISE"}
+        elif data_int == 1 and data2_int == 0:
+            return {'status': "ON: COUNTERCLOCKWISE"}'''
+    
+   
+    return {'status': "ON"}

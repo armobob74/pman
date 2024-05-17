@@ -1,6 +1,6 @@
 {
   "port": 4980,
-  "serial_port": "/dev/ttyUSB0",
+  "serial_port": "COM3",
   "home_page": "/",
   "blueprints": ["kamoer_peri"],
   "sidecards": [
