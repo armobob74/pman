@@ -3,6 +3,7 @@ from .connection import Connection
 from .pman_blueprints.aurora_pump import aurora_pump
 from .pman_blueprints.aurora_valve import aurora_valve
 from .pman_blueprints.release_scheduler import release_scheduler
+from .pman_blueprints.kamoer_dip_1500 import kamoer_peri
 
 from .views import views
 from flask import Flask
@@ -67,6 +68,8 @@ def create_app(pman_config_name):
         register_aurora_pump_blueprint(app)
     if 'release_scheduler' in optional_blueprints:
         app.register_blueprint(release_scheduler)
+    if 'kamoer_peri' in optional_blueprints:
+        app.register_blueprint(kamoer_peri)
     return app
 
 def register_aurora_pump_blueprint(app):

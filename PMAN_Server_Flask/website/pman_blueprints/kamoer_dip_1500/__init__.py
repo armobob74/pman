@@ -6,6 +6,7 @@ from math import log, floor
 from ..utils import extract_pman_args 
 
 default_addr = '1'
+
 kamoer_peri = Blueprint('kamoer_peri',__name__, url_prefix='/pman/kamoer-peri')
 
 @kamoer_peri.get('/')
