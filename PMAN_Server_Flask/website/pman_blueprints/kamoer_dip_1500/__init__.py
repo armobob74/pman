@@ -1,7 +1,7 @@
 from flask import current_app, request, Blueprint
 import json
 import pdb
-from .command_formatting_playground import motor_start, motor_stop, motor_clockwise, motor_counterclockwise,set_rpm, set_runtime, set_runtime_cmd 
+from .command_formatting_playground import ModbusRTU
 from math import log, floor
 from ..utils import extract_pman_args 
 
@@ -16,17 +16,19 @@ def index():
 @kamoer_peri.post('/start')
 @extract_pman_args
 def start_pump(rpm, dir, addr):
-    set_rpm(rpm, addr)
+    modbus = ModbusRTU(current_app.connection.serial)
+    modbus.set_rpm(rpm, addr)
     if dir == 1:
-        motor_clockwise(addr)
+        modbus.motor_clockwise(addr)
     else:
-        motor_counterclockwise(addr)
-    set_runtime(0, addr) # Set to 0 because we want pump to run indefinetly.
-    motor_start(addr)
+        modbus.motor_counterclockwise(addr)
+    modbus.set_runtime(0, addr) # Set to 0 because we want pump to run indefinetly.
+    modbus.motor_start(addr)
     return {'status': "ok", 'message': "Pump Started"}
 
 @kamoer_peri.post('/stop')
 @extract_pman_args
 def stop_pump(addr):
-    motor_stop(addr)
+    modbus = ModbusRTU(current_app.connection.serial)
+    modbus.motor_stop(addr)
     return {'status': "ok", 'message': "Pump Stopped"}
