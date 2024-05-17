@@ -1,8 +1,6 @@
 {% extends "layout.html" %} {% block head%}
 <style type="text/css" media="screen">
 .pump-control-card{
-	_border: solid 3px gray;
-	_box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	padding:0.5em;
 	display:flex;
@@ -19,11 +17,13 @@ span.addr{
 	font-weight: bold;
 }
 button {
-	border:solid 1px lightgray;
+	border:solid 1px black;
+	color:black;
 	border-radius:2px;
 }
 </style>
 {% endblock %} {% block content%}
+<h2>Kamoer Peri Control</h2>
 <div class="pump-control-container">
 {% for addr in addrs %}
   <div class="pump-control-card">
