@@ -38,7 +38,7 @@ span.motor-status {
   <div class="pump-control-card">
 	  <div class="card-header">
 	  <span class="addr">Address: {{addr}}</span>
-	  <span class="motor-status" id="motor-status-{{addr}}" addr="{{addr}}">off</span>
+	  <span class="motor-status" id="motor-status-{{addr}}" addr="{{addr}}">.</span>
           </div>
       <label for="direction">Direction</label>
       <select id="direction-{{addr}}" name="direction-{{addr}}">
@@ -85,17 +85,17 @@ async function stop_pump(addr){
 	}, 500);
 }
 
-setInterval(() => {
-	motor_status_spans.forEach((status_span)=>{
-		let addr = status_span.getAttribute('addr')
-		fetch(`/pman/kamoer-peri/status?addr=${addr}`)
-		.then(response => response.json())
-		.then(data => {
-			status_span.textContent = data.status;
-		})
-		.catch(error => console.error('Error:', error));
-	})
-}, 3000);
+//setInterval(() => {
+//	motor_status_spans.forEach((status_span)=>{
+//		let addr = status_span.getAttribute('addr')
+//		fetch(`/pman/kamoer-peri/status?addr=${addr}`)
+//		.then(response => response.json())
+//		.then(data => {
+//			status_span.textContent = data.status;
+//		})
+//		.catch(error => console.error('Error:', error));
+//	})
+//}, 1000);
 
 {% for addr in addrs %}
 enforceCharset("rpm-{{addr}}","0123456789")
