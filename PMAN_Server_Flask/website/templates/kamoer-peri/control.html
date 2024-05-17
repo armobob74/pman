@@ -75,7 +75,7 @@
   async function start_pump(addr){
   	let rpm = document.getElementById(`rpm-${addr}`).value
   	let direction = document.getElementById(`direction-${addr}`).value
-  	let response = await fetchPOST(`${base_url}/start`, {args:[rpm,direction,addr]})
+  	let response = await fetchPOST(`${base_url}/start`, {args:[addr,direction,rpm]})
   	start_btn.hidden = true;
   	stop_btn.hidden = false;
   	stop_btn.disabled = true;

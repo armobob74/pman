@@ -20,7 +20,7 @@ def index():
 
 @kamoer_peri.post('/start')
 @extract_pman_args
-def start_pump(rpm, direction, addr):
+def start_pump(addr, direction, rpm):
     addr = int(addr)
     addr = addr.to_bytes(1, byteorder='big')
     direction = int(direction)
