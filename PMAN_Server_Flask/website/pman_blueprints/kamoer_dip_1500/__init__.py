@@ -31,6 +31,7 @@ def start_pump(addr, direction, rpm):
     else:
         modbus.motor_counterclockwise(addr)
     modbus.set_runtime(0, addr) # Set to 0 because we want pump to run indefinetly.
+    modbus.set_rpm(rpm,addr)
     modbus.motor_start(addr)
     return {'status': "ok", 'message': "Pump Started"}
 
