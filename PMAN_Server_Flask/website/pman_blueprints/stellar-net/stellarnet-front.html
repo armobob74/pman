@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellarnet Spectrometer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Flask App Frontend</h1>
+
+    <!-- Input fields for setting parameters -->
+    <label for="inttime">Integration Time:</label>
+    <input type="number" id="inttime" value = "50">
+
+    <label for="scansavg">Scans to Average:</label>
+    <input type="number" id="scansavg" value = "1">
+    
+    <label for="smooth">Data Smoothing:</label>
+    <input type="number" id="smooth" value = "0">
+    
+    <label for="xtiming">X Timing:</label>
+    <input type="number" id="xtiming" value = "3">
+
+    
+    <!-- Add input fields for other parameters similarly -->
+    <button onclick="setParameters()">Set Parameters</button>
+    <button onclick="getData()">Get Data</button>
+
+    <!-- Placeholder for displaying data -->
+    <div id="dataDisplay"></div>
+
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+    <script>
+        function setParameters() {
+            var inttime = document.getElementById("inttime").value;
+            var scansavg = documet.getElementById("scansavg").value;
+            var smooth = document.getElementById("smooth").value;
+            var xtiming = document.getElementById("xtiming").value;
+
+            fetch('/stellar-net/params', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ inttime: inttime, scansavg: scansavg, smooth: smooth, xtiming: xtiming })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function getData() {
+            fetch('/stellar-net/data')
+            .then(response => response.json())
+            .then(data => {
+                const xData = data.Wavelength;
+                const yData = data.Spectrum-Data;
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: xData,
+                        datasets: [{
+                            label: 'Spectrometer Data',
+                            data: yData,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {title: {display: true, text: 'Wavelength'}},
+                            y: {title: {display: true, text: 'Spectrum-Data'}}
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
