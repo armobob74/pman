@@ -7,7 +7,7 @@ args = sys.argv
 if len(args) > 1:
     pman_config_name = args[1]
 else:
-    pman_config_name = 'kamoer_peri.json'
+    pman_config_name = 'aurora_pump_test_windows.json'
 if not pman_config_name.endswith('.json'):
     pman_config_name += '.json'
 

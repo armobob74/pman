@@ -10,7 +10,7 @@ aurora_pump = Blueprint('aurora_pump',__name__, url_prefix='/pman/aurora-pump')
 def format_command(data, logging=True):
     """ Doesn't include R, which is needed to run action commands """
     addr = default_addr
-    if request:
+    if request and request.data:
         request_data = json.loads(request.data)
         if 'kwargs' in request_data:
             addr = request_data['kwargs'].get('address',default_addr)
@@ -284,3 +284,14 @@ def bubbleBustTransfer(from_port, waste_port, to_port, volume, fraction_air):
     command = format_command(command)
     response = current_app.connection.send(command, immediate=True)
     return {'status':'ok','message':parse_response(response)}
+
+
+@aurora_pump.route("/hardstop", methods=["POST", "GET"])
+def hardstop():
+    command = format_command('T') 
+    return current_app.connection.send(command, immediate=True)
+
+@aurora_pump.route("/resume", methods=["POST", "GET"])
+def resume():
+    command = format_command('R') 
+    return current_app.connection.send(command, immediate=True)

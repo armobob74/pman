@@ -3,7 +3,7 @@ from stellarnet_driverLibs import stellarnet_driver3 as sn
 import json
 from ..utils import extract_pman_args 
 
-
+#sn.installDeviceDriver()
 stellar_net = Blueprint('stellar_net',__name__, url_prefix='/stellar-net')
 
 @stellar_net.get('/')
