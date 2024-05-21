@@ -4,11 +4,11 @@ import json
 from ..utils import extract_pman_args 
 
 
-stellar_net = Blueprint('stellar_net',__name__, url_prefix='/pman/stellar-net')
+stellar_net = Blueprint('stellar_net',__name__, url_prefix='/stellar-net')
 
 @stellar_net.get('/')
 def index():
-    return "hi"
+    return "index"
 
 @stellar_net.post('/params')
 @extract_pman_args
@@ -23,5 +23,5 @@ def get_data():
     spectX = sn.getSpectrum_X(spectrometer)
     spectY = sn.getSpectrum_Y(spectrometer)
 
-    return{'Wavelength': spectX, 'Spectrum-Data': spectY}
+    return{'Wavelength': spectX, 'SpectrumData': spectY}
 
