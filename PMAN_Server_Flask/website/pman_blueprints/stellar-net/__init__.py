@@ -12,7 +12,7 @@ def index():
 
 @stellar_net.post('/params')
 @extract_pman_args
-def set_up(inttime, scansavg,smooth, xtiming):
+def set_up(inttime, scansavg, smooth, xtiming):
     spectrometer = sn.array_get_spec_only(0) 
     sn.setParam(spectrometer, inttime, scansavg, smooth, xtiming, True)
     return{'status': "Ok", 'message': "Setting params for spectrometer"}
