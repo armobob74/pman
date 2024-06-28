@@ -1,31 +1,56 @@
 {% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
 <h2>Connectivity</h2>
 <table>
-	<thead>
-		<tr>
-			<th>Address</th>
-			<th>Status</th>
-		</tr>
-	</thead>
-	<tbody>
-			{% for address in addresses %}
-		<tr>
-			<td>{{address}}</td>
-			<td>idk</td>
-		</tr>
-			{% endfor%}
-	</tbody>
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for address in addresses %}
+    <tr>
+      <td>{{address}}</td>
+      <td>idk</td>
+    </tr>
+    {% endfor%}
+  </tbody>
 </table>
 {% endblock %} {% block scripts %}
 <script>
-  async function getStatus(addr) {
-    const response = await fetchPOST("/pman/aurora-pump/custom", {
-      args: '?',
-      kwargs: {
-        address: addr,
-      },
-    });
-    return response
-  }
+   async function getStatus(addr) {
+     const response = await fetchPOST("/pman/aurora-pump/custom", {
+       args: '?',
+       kwargs: {
+         address: addr,
+       },
+     });
+    let status_byte;
+	   let message;
+    try{
+     message = JSON.parse(response).message;
+    } catch {
+     status_byte = 'error (check console)'
+     console.error(`This was the response from getStatus(${addr}):`,response)
+    }
+    if(message.length > 2){
+     status_byte = message[2];
+    } else {
+     status_byte = "not connected"
+     console.log(`This was the response from getStatus(${addr}):`,response)
+    }
+     return status_byte;
+   }
+   const addrs = [{% for address in addresses %}"{{address}}",{%endfor%}]
+   const table = document.querySelector("tbody");
+
+   async function updateTable() {
+     for (let row of table.rows) {
+       let addr = row.cells[0].innerText;
+       let status = await getStatus(addr);
+       row.cells[1].innerText = status;
+     }
+   }
+   setInterval(updateTable, 500);
 </script>
 {% endblock%}
