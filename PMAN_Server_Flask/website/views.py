@@ -65,7 +65,8 @@ def auroraPumpCheckBusConnectivity():
     pman_config = current_app.config['pman-config']
     instrument_info = pman_config['instrument_info']
     addresses = instrument_info['addresses']
-    return render_template('aurora-pump/check_bus_connectivity.html', addresses=addresses)
+    serial_port = instrument_info['serial_port']
+    return render_template('aurora-pump/check_bus_connectivity.html', addresses=addresses,serial_port=serial_port)
 
 @views.route('/release-scheduler/release-scheduler')
 def releaseScheduler():

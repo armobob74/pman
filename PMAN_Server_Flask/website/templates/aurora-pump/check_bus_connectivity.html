@@ -1,5 +1,5 @@
 {% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
-<h2>Connectivity</h2>
+<h2>Connectivity on {{serial_port}}</h2>
 <table>
   <thead>
     <tr>
@@ -41,7 +41,6 @@
     }
      return status_byte;
    }
-   const addrs = [{% for address in addresses %}"{{address}}",{%endfor%}]
    const table = document.querySelector("tbody");
 
    async function updateTable() {
