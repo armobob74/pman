@@ -60,6 +60,13 @@ def auroraPumpCustom():
 def auroraPumpBubbleBust():
     return render_template('aurora-pump/bubble_bust_transfer.html')
 
+@views.route('/aurora-pump/check-bus-connectivity')
+def auroraPumpCheckBusConnectivity():
+    pman_config = current_app.config['pman-config']
+    instrument_info = pman_config['instrument_info']
+    addresses = instrument_info['addresses']
+    return render_template('aurora-pump/check_bus_connectivity.html', addresses=addresses)
+
 @views.route('/release-scheduler/release-scheduler')
 def releaseScheduler():
     if 'scheduler_tablepath' in current_app.config['pman-config']:

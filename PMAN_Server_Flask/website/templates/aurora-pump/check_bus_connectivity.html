@@ -1,0 +1,31 @@
+{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+<h2>Connectivity</h2>
+<table>
+	<thead>
+		<tr>
+			<th>Address</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+			{% for address in addresses %}
+		<tr>
+			<td>{{address}}</td>
+			<td>idk</td>
+		</tr>
+			{% endfor%}
+	</tbody>
+</table>
+{% endblock %} {% block scripts %}
+<script>
+  async function getStatus(addr) {
+    const response = await fetchPOST("/pman/aurora-pump/custom", {
+      args: '?',
+      kwargs: {
+        address: addr,
+      },
+    });
+    return response
+  }
+</script>
+{% endblock%}

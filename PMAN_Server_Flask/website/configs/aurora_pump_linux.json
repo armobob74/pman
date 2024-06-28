@@ -9,12 +9,14 @@
     ["Set Velocity", "/aurora-pump/set-velocity"],
     ["Control", "/aurora-pump/control"],
     ["Custom", "/aurora-pump/custom"],
-    ["Bubble Buster", "/aurora-pump/bubble-bust-transfer"]
+    ["Bubble Buster", "/aurora-pump/bubble-bust-transfer"],
+    ["Bus Connectivity", "/aurora-pump/check-bus-connectivity"]
   ],
   "instrument_info": {
     "num_valve_ports": 12,
     "resolution": 6000,
-    "syringe_size": 10
+    "syringe_size": 10,
+    "addresses":["1","2","3","4","5"]
   },
   "settings":{
 	  "max-syringe-speed":15
