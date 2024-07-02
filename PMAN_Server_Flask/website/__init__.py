@@ -4,6 +4,7 @@ from .pman_blueprints.aurora_pump import aurora_pump
 from .pman_blueprints.aurora_valve import aurora_valve
 from .pman_blueprints.release_scheduler import release_scheduler
 from .pman_blueprints.kamoer_dip_1500 import kamoer_peri
+from .pman_blueprints.dcdli import dcdli
 
 from .views import views
 from flask import Flask
@@ -62,14 +63,11 @@ def create_app(pman_config_name):
     # register only the blueprints that the config says are necesary
     # we also check for any special config variables that the blueprints may need
     optional_blueprints = pman_config.get('blueprints',[])
-    if 'aurora_valve' in optional_blueprints:
-        app.register_blueprint(aurora_valve)
-    if 'aurora_pump' in optional_blueprints:
-        register_aurora_pump_blueprint(app)
-    if 'release_scheduler' in optional_blueprints:
-        app.register_blueprint(release_scheduler)
-    if 'kamoer_peri' in optional_blueprints:
-        app.register_blueprint(kamoer_peri)
+    for b in optional_blueprints:
+        try:
+            eval(f'app.register_blueprint({b})')
+        except NameError:
+            raise NameError(f"You're trying to register a blueprint that you haven't imported: {b}")
     return app
 
 def register_aurora_pump_blueprint(app):
