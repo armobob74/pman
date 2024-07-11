@@ -1,5 +1,5 @@
 {
-  "port": 5301,
+  "port": 5001,
   "read_until": "\n",
   "serial_port": "/dev/ttyUSB0",
   "home_page": "/",
