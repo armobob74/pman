@@ -1,0 +1,263 @@
+{% extends "layout.html" %} {% block head%}
+<style>
+  h2{
+    text-align: center;
+    }
+
+.table-container {
+        display: flex;
+    }
+    
+.table-container table {
+        width: 33.33%; /* Each table takes up 1/3 of the container width */
+        margin-right: 10px;
+    }
+    
+
+  table {
+    border-collapse: collapse;
+    width: 20%;
+  }
+
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    border-bottom:2px solid black;
+  }
+  th{
+    border: 1px solid #000;
+    background-color:#4B0082;
+    color: white;
+    font-weight:bolder;
+    text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+    font-size: 20px;
+  }
+  .btn {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+    border-radius: 18px;
+  }
+  .btn-on {
+    background-color: #4CAF50;
+    margin-right: 1%;
+    color: white;
+    transition: background-color 1s;
+  }
+  .btn-off {
+    background-color: #f44336;
+    margin-left: 1%;
+    color: white;
+    transition: background-color 1s;
+  }
+  .btn-active{
+    text-shadow: 
+    -1px -1px 0 white,  
+     1px -1px 0 white,
+    -1px  1px 0 white,
+     1px  1px 0 white;
+  }
+  .btn-on.btn-active {
+    background-color: white;
+    border: 2px solid green;
+    color: green;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+  }
+  .btn-off.btn-active {
+    background-color: white;
+    border: 2px solid red;
+    color: red;
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+  }
+  .table-row-odd {
+    background-color: #f2f2f2;
+  }
+  
+  .table-row-even {
+    background-color: #ffffff;
+  }
+</style>
+{% endblock %} {% block content%}
+
+<h2>DCDLI Pin Control Buttons</h2>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Pin Name</th>
+                <th>Action</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="pinTableBody-1">
+            <!-- Table 1 content will be generated dynamically -->
+        </tbody>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Pin Name</th>
+                <th>Action</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="pinTableBody-2">
+            <!-- Table 2 content will be generated dynamically -->
+        </tbody>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Pin Name</th>
+                <th>Action</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="pinTableBody-3">
+            <!-- Table 3 content will be generated dynamically -->
+        </tbody>
+    </table>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+    const pins = [2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 16];
+    let pinStatus = {}
+    pins.forEach(pin => {
+        pinStatus[pin] = 'Getting Status...';
+    });
+
+    const base_url = '/pman/dcdli'
+    function generateTable(pinz , num) {
+      const tbody = document.getElementById(`pinTableBody-${num}`);
+      tbody.innerHTML = '';
+      pinz.forEach((pin, index) => {
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td');
+        const tdActions = document.createElement('td');
+        const tdStatus = document.createElement('td')
+        const btnOn = document.createElement('button');
+        const btnOff = document.createElement('button');
+  
+        btnOn.textContent = 'ON';
+        btnOn.classList.add('btn', 'btn-on');
+        btnOn.addEventListener('click', () => {
+            turnPinOn(pin);
+            activateButton(btnOn, btnOff);
+        });
+  
+        btnOff.textContent = 'OFF';
+        btnOff.classList.add('btn', 'btn-off');
+        btnOff.addEventListener('click', () => {
+            turnPinOff(pin);
+            activateButton(btnOff,btnOn);
+        });
+        
+        tdName.textContent = `Pin ${pin}`;
+        tdStatus.textContent= pinStatus[pin];
+        tdStatus.id = `pinStatus-${pin}`;
+
+        tdActions.appendChild(btnOn);
+        tdActions.appendChild(btnOff);
+  
+        tr.appendChild(tdName);
+        tr.appendChild(tdActions);
+        tr.appendChild(tdStatus);
+
+        tr.classList.add(index % 2 === 0 ? 'table-row-even' : 'table-row-odd')
+  
+        tbody.appendChild(tr);
+      });
+    }
+
+    function generateTable1()
+    {
+        generateTable(pins.slice(0,4), 1);
+    }
+
+    function generateTable2()
+    {
+        generateTable(pins.slice(4,8), 2);
+    }
+
+    function generateTable3()
+    {
+        generateTable(pins.slice(8), 3);
+    }
+
+
+
+    async function turnPinOn(pin)
+    {
+        let response = await fetchPOST(`${base_url}/on`,{args:[pin]});
+        pinStatus[pin] = 'ON';
+    }
+
+    async function turnPinOff(pin)
+    {   
+        let response = await fetchPOST(`${base_url}/off`,{args:[pin]});
+        pinStatus[pin] = 'OFF';
+
+    }
+
+    function activateButton(btn, b) {
+        btn.classList.add('btn-active');
+        b.classList.remove('btn-active');
+
+        if (btn.textContent === 'OFF') {
+            setTimeout(() => {
+                btn.classList.remove('btn-active');
+            }, 2000);
+        }
+        
+      }
+
+    window.onload = function() {
+        generateTable1();
+        generateTable2();
+        generateTable3();
+        setInterval(updateStatusPeriodically, 500);
+        setInterval(updatePinStatusDisplay, 100);
+     };
+
+    
+    function updatePinStatusDisplay() {
+        for (const pin of pins) {
+            const tdStatus = document.getElementById(`pinStatus-${pin}`);
+            if (tdStatus) {
+                tdStatus.textContent = pinStatus[pin];
+            }
+        }
+    }
+    async function updateStatusPeriodically() {
+        let response = await fetch(`${base_url}/get_all_status`)
+        .then((response) => response.json())
+        .then((responseJson) => {
+          for(const pin of pins)
+          {
+            pinStatus[pin] = responseJson[pin];
+            console.log(pin);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+
+    }
+  
+</script>
+{% endblock%}

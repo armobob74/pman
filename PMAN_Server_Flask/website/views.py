@@ -92,3 +92,7 @@ def kamoerPeriControl():
     instrument_info = pman_config['instrument_info']
     addrs = instrument_info['addrs']
     return render_template('kamoer-peri/control.html',addrs=addrs)
+
+@views.route('/dcdli/control')
+def dcdliControl():
+    return render_template('dcdli/control.html')
