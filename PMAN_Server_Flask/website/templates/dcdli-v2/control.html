@@ -1,0 +1,83 @@
+{% extends "layout.html" %} {% block head%}
+<style type="text/css" media="screen">
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(
+      4,
+      1fr
+    ); 
+    gap: 20px; 
+  }
+
+  .grid-item{
+	  display:flex;
+	  justify-content: flex-end;
+	  align-items: center;
+	  gap:1em;
+	  padding:0.5em;
+    border: dashed 2px gray;
+		
+  }
+  .relay.is-on{
+	  background-color: lightgreen;
+	  border-color: darkgreen;
+  }
+
+  button.green{
+	  background-color: darkgreen;
+	  padding-left: 0.6em;
+	  padding-right: 0.6em;
+  }
+  button.error{
+	  border-radius:0.5em;
+  }
+  button.green:hover{
+	  background-color: lightgreen;
+  }
+</style>
+{% endblock %} {% block content%}
+
+<div class="grid-container">
+	{% for idx, relay_name in relay_names %}
+	<div class="grid-item relay">
+		{{relay_name}}
+		<button class="error green" onclick="relayOn('{{relay_name}}',{{idx}})">on</button>
+		<button class="error" onclick="relayOff('{{relay_name}}',{{idx}})">off</button>
+	</div>
+	{% endfor %}
+</div>
+
+{% endblock %} {% block scripts %}
+<script>
+
+	let relays = document.querySelectorAll('.relay')
+	async function relayOn(relay_name, parent_idx){
+		let result = await fetchPOST('/pman/dcdli-v2/on',{'args':[relay_name]})
+		relays[parent_idx].classList.add('is-on')
+		checkStatus()
+	}
+
+	async function relayOff(relay_name, parent_idx){
+		let result = await fetchPOST('/pman/dcdli-v2/off',{'args':[relay_name]})
+		relays[parent_idx].classList.remove('is-on')
+		checkStatus()
+	}
+
+	async function checkStatus(){
+		let statuses = await fetch('/pman/dcdli-v2/status')
+		statuses = await statuses.json()
+		statuses.forEach((is_on, idx) =>{
+			if(is_on){
+			relays[idx].classList.add('is-on')
+			}  else {
+			relays[idx].classList.remove('is-on')
+			}
+		})
+
+	}
+
+	checkStatus()
+	setInterval(checkStatus, 1000)
+
+</script>
+{% endblock%}

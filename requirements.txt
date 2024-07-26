@@ -7,3 +7,4 @@ pyserial==3.5
 python-dateutil==2.8.2
 pytz==2024.1
 requests==2.31.0
+git+https://github.com/fdobrovolny/RS485-relay-board.git

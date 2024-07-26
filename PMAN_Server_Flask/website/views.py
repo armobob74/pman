@@ -96,3 +96,10 @@ def kamoerPeriControl():
 @views.route('/dcdli/control')
 def dcdliControl():
     return render_template('dcdli/control.html')
+
+@views.route('/dcdli-v2/control')
+def dcdlV2Control():
+    pman_config = current_app.config['pman-config']
+    instrument_info = pman_config['instrument_info']
+    relay_names = instrument_info['relays'].keys()
+    return render_template('dcdli-v2/control.html', relay_names = enumerate(relay_names))
