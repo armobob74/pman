@@ -34,6 +34,15 @@
   button.green:hover{
 	  background-color: lightgreen;
   }
+
+  .footer{
+	  width:100%;
+	  display:flex;
+	  align-items:center;
+	  justify-content:center;
+	  gap:2em;
+	  padding:1em;
+  }
 </style>
 {% endblock %} {% block content%}
 
@@ -46,21 +55,34 @@
 	</div>
 	{% endfor %}
 </div>
+<div class="footer">
+	<button class="error green" onclick="relayAllOn()">all on</button>
+	<button class="error" onclick="relayAllOff()">all off</button>
+</div>
 
 {% endblock %} {% block scripts %}
 <script>
 
 	let relays = document.querySelectorAll('.relay')
+
+	async function relayAllOn(){
+		let result = await fetchPOST('/pman/dcdli-v2/all-on',{})
+		relays.forEach(rel=>rel.classList.add('is-on'))
+	}
+
+	async function relayAllOff(){
+		let result = await fetchPOST('/pman/dcdli-v2/all-off',{})
+		relays.forEach(rel=>rel.classList.remove('is-on'))
+	}
+
 	async function relayOn(relay_name, parent_idx){
 		let result = await fetchPOST('/pman/dcdli-v2/on',{'args':[relay_name]})
 		relays[parent_idx].classList.add('is-on')
-		checkStatus()
 	}
 
 	async function relayOff(relay_name, parent_idx){
 		let result = await fetchPOST('/pman/dcdli-v2/off',{'args':[relay_name]})
 		relays[parent_idx].classList.remove('is-on')
-		checkStatus()
 	}
 
 	async function checkStatus(){
@@ -77,7 +99,7 @@
 	}
 
 	checkStatus()
-	setInterval(checkStatus, 1000)
+	setInterval(checkStatus, 2000)
 
 </script>
 {% endblock%}

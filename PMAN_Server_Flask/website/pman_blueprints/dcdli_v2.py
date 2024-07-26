@@ -47,3 +47,16 @@ def relay_status_all():
     rb = make_relay()
     ret = rb.read_all_relays()
     return jsonify(ret)
+
+@dcdli_v2.route('/all-on', methods=['POST'])
+def relay_all_on():
+    rb = make_relay()
+    rb.open_all()
+    return jsonify({'message':f'Relays all ON', 'status':'ok'})
+
+@dcdli_v2.route('/all-off', methods=['POST'])
+def relay_all_off():
+    rb = make_relay()
+    rb.close_all()
+    return jsonify({'message':f'Relays all OFF', 'status':'ok'})
+
