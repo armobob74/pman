@@ -26,11 +26,11 @@ def get_relay_idx(relay_name):
 def execute_serial_action(action,args=[]):
     """ guarantees that the action is done, and redoes it if necessary """
     response_good = False
-    while not response_good:
+    while response_good != True:
         try:
             action(*args)
             response_good = True
-        except InvalidResponseError:
+        except:
             response_good = False
             print(f"Got bad checksum, trying again")
             time.sleep(random.random()/2) # the randomness prevents serial clogs
