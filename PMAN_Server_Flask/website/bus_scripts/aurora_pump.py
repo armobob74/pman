@@ -14,8 +14,8 @@ class AuroraPumpBusIdentifier:
         self.serial.write(command)
         response = self.serial.read_until(b'\n')
         if len(response) > 0 and response.startswith(b'\xff/0'):
-            return True
-        return False
+            return response, True
+        return response, False
 
     def identify_bus(self):
         """
@@ -26,9 +26,11 @@ class AuroraPumpBusIdentifier:
         """
         print(f"Beginning bus identification for port {self.serial.port}")
         bus_id = ''
+        table = []
         for c in potential_addrs:
-            is_valid = self.query_addr(c)
-            print(f'{c}\t{is_valid}')
+            response, is_valid = self.query_addr(c)
+            table.append([c, response, is_valid])
+            print(f"{c}\t{response}\t\t{is_valid}")
             if is_valid:
                 bus_id = bus_id + c
         print(f"Done!\nBus ID is: {bus_id}")
