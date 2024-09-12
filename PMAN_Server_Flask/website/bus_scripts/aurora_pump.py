@@ -38,6 +38,8 @@ class AuroraPumpBusIdentifier:
         self.serial.close()
 
 if __name__ == "__main__":
+    import json
+    output_file = './aurora_portmap.json'
     ports = [port.device for port in serial.tools.list_ports.comports()]
     port_id_dict = {}
     for p in ports:
@@ -47,4 +49,7 @@ if __name__ == "__main__":
             port_id_dict[p] = bus_id
         else:
             print("No Aurora Pumps on this port")
+    print(f"Writing to {output_file}")
     print(port_id_dict)
+    with open(output_file, 'w') as f:
+        json.dump(port_id_dict, f, indent=4)
