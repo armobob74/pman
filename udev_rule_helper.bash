@@ -31,7 +31,7 @@ echo "Found it! Creating rule now."
 
 rule="SUBSYSTEM==\"tty\", ATTRS{idVendor}==\"$idVendor\", ATTRS{idProduct}==\"$idProduct\", SYMLINK+=\"$symlink_name\", MODE=\"0666\""
 
-echo "$rule" | sudo tee /etc/udev/rules.d/99-pman.rules
+echo "$rule" | sudo tee -a /etc/udev/rules.d/99-pman.rules
 
 sudo udevadm control --reload-rules
 sudo udevadm trigger
