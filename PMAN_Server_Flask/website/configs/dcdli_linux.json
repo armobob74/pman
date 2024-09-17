@@ -5,6 +5,22 @@
   "home_page": "/",
   "blueprints": ["dcdli"],
   "sidecards": [["Control", "/dcdli/control"]],
-  "instrument_info": { "pins": [2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 16] }
+  "instrument_info": { "pins": [2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 16], 
+                       "pin_names":         
+                        {
+                        "2": "Pin1", 
+                        "3": "Pin2",
+                        "4": "Pin3",
+                        "5": "Pin4",
+                        "6": "Pin5",
+                        "7": "Pin6",
+                        "8": "Pin7",
+                        "9": "Pin8",
+                        "10": "Pin9",
+                        "14": "Pin10",
+                        "15": "Pin11",
+                        "16": "Pin12"
+                        }
+                     }
 }
 

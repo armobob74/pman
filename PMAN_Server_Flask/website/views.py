@@ -95,7 +95,9 @@ def kamoerPeriControl():
 
 @views.route('/dcdli/control')
 def dcdliControl():
-    return render_template('dcdli/control.html')
+    pman_config = current_app.config['pman-config']
+    pin_names = pman_config['instrument_info']["pin_names"]
+    return render_template('dcdli/control.html', pin_names=pin_names)
 
 @views.route('/dcdli-v2/control')
 def dcdlV2Control():
