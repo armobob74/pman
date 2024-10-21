@@ -1,14 +1,23 @@
 {% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
 <h2>Switch to Port</h2>
-<div class="q_grid">
-	{%for i in range(12)%}
-	<button type="button" onclick=switchToPort({{i+1}})>{{i+1}}</button>
-  {%endfor%}
-</div>
+<form>
+  <label
+    >Address:
+    <input type="text" id="addr_input" value="0" />
+  </label>
+  <div class="q_grid">
+    {%for i in range(12)%}
+    <button type="button" onclick="switchToPort({{i+1}})">{{i+1}}</button>
+    {%endfor%}
+  </div>
+</form>
 {% endblock %} {% block scripts %}
 <script>
-  async function switchToPort(n){
-    const response = await fetchPOST("/pman/aurora-valve/switch-to-port", { args: [n] });
+  async function switchToPort(n) {
+    const addr = parseInt(addr_input.value);
+    const response = await fetchPOST("/pman/aurora-valve/switch-to-port", {
+      args: [addr, n],
+    });
     display(response);
   }
 </script>

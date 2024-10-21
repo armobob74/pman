@@ -1,0 +1,25 @@
+{% extends "layout.html" %} {% block head%} {% endblock %} {% block content%}
+<h2>Change Address</h2>
+<form>
+  <label
+    >Old Address:
+    <input type="text" id="old_addr_input" value="0" />
+  </label>
+  <label
+    >New Address:
+    <input type="text" id="new_addr_input" value="1" />
+  </label>
+	  <button type="button" onclick="changeAddr()">Submit</button>
+</form>
+{% endblock %} {% block scripts %}
+<script>
+  async function changeAddr() {
+    const old_addr = parseInt(old_addr_input.value);
+    const new_addr = parseInt(new_addr_input.value);
+    const response = await fetchPOST("/pman/aurora-valve/change-addr", {
+      args: [old_addr, new_addr],
+    });
+    display(response);
+  }
+</script>
+{% endblock%}

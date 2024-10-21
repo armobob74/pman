@@ -2,10 +2,11 @@
   "port": 5000,
   "read_until": "\n",
   "serial_port":"/dev/ttyUSB0",
-  "home_page":"/",
+  "home_page":"/aurora-valve/switch-to-port",
   "blueprints":["aurora_valve"],
   "sidecards": [
-	  ["Switch to Port", "/aurora-valve/switch-to-port"]
+	  ["Switch to Port", "/aurora-valve/switch-to-port"],
+	  ["Change Address", "/aurora-valve/change-addr"]
   ]
 
 }

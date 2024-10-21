@@ -8,7 +8,7 @@ from .pman_blueprints.dcdli import dcdli
 from .pman_blueprints.dcdli_v2 import dcdli_v2
 
 from .views import views
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from .scheduler import init_scheduler
 import json
@@ -40,6 +40,8 @@ def create_handlers():
 def create_app(pman_config_name):
     sass.compile(dirname=('./website/static/sass','./website/static/css'))
     app = Flask(__name__)
+
+
     CORS(app)
     pman_config_path = os.path.join('configs',pman_config_name)
     app.config['pman-config-path'] = pman_config_path
@@ -60,7 +62,6 @@ def create_app(pman_config_name):
             read_until=pman_config.get('read_until', None)
         )
     app.register_blueprint(views, url_prefix='/')
-
     # register only the blueprints that the config says are necesary
     # we also check for any special config variables that the blueprints may need
     optional_blueprints = pman_config.get('blueprints',[])
