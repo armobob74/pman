@@ -5,17 +5,17 @@ RESPOSE_LEN = 8 # number of response bytes expected
 
 aurora_valve = Blueprint('aurora_valve',__name__, url_prefix='/pman/aurora-valve')
 
-def check_status_bit(status_bit: bytes):
+def check_status_bit(status_bit: int):
     status_dict = {
-        b'\x00': "Normal state: The motor is operating normally.",
-        b'\x01': "Frame error: Communication error occurred due to an incorrect frame format.",
-        b'\x02': "Parameter error: Received parameters are not within the allowed range.",
-        b'\x03': "Optocoupler error: An issue with the optocoupler detection has occurred.",
-        b'\x04': "Motor busy: The motor is currently executing another task.",
-        b'\x05': "Motor stalled: The motor has stopped due to encountering an obstruction or overload.",
-        b'\x06': "Unknown position: The motor cannot identify the current position.",
-        b'\xFE': "Task is being executed: The received command is currently being processed.",
-        b'\xFF': "Unknown error: An unidentified error has occurred."
+        0x00: "Normal state: The motor is operating normally.",
+        0x01: "Frame error: Communication error occurred due to an incorrect frame format.",
+        0x02: "Parameter error: Received parameters are not within the allowed range.",
+        0x03: "Optocoupler error: An issue with the optocoupler detection has occurred.",
+        0x04: "Motor busy: The motor is currently executing another task.",
+        0x05: "Motor stalled: The motor has stopped due to encountering an obstruction or overload.",
+        0x06: "Unknown position: The motor cannot identify the current position.",
+        0xFE: "Task is being executed: The received command is currently being processed.",
+        0xFF: "Unknown error: An unidentified error has occurred."
     }
     return status_dict.get(status_bit, f"Invalid or unknown status bit {status_bit}.")
 
