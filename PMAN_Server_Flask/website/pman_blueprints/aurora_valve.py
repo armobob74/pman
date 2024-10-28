@@ -5,11 +5,55 @@ RESPOSE_LEN = 8 # number of response bytes expected
 
 aurora_valve = Blueprint('aurora_valve',__name__, url_prefix='/pman/aurora-valve')
 
+def check_status_bit(status_bit: bytes):
+    status_dict = {
+        b'\x00': "Normal state: The motor is operating normally.",
+        b'\x01': "Frame error: Communication error occurred due to an incorrect frame format.",
+        b'\x02': "Parameter error: Received parameters are not within the allowed range.",
+        b'\x03': "Optocoupler error: An issue with the optocoupler detection has occurred.",
+        b'\x04': "Motor busy: The motor is currently executing another task.",
+        b'\x05': "Motor stalled: The motor has stopped due to encountering an obstruction or overload.",
+        b'\x06': "Unknown position: The motor cannot identify the current position.",
+        b'\xFE': "Task is being executed: The received command is currently being processed.",
+        b'\xFF': "Unknown error: An unidentified error has occurred."
+    }
+    return status_dict.get(status_bit, "Invalid or unknown status bit.")
+
+
 def cksum(b):
     summation = sum(b)
     HB = (summation >> 8) & 0xFF  # Shift right by 8 bits and mask to get HB
     LB = summation & 0xFF  # Mask to get LB
     return bytes([LB, HB])
+
+def parse_response(response_bytes):
+    """
+    Parses an 8-byte response message and returns a dictionary with the extracted data and status.
+    
+    Parameters:
+    - response_bytes (bytes): The response message received over serial communication.
+    
+    Returns:
+    - dict: A dictionary containing 'data' and 'status'.
+    """
+    try:
+        if len(response_bytes) != 8:
+            return {'data': None, 'status': "Invalid response length"}
+
+        start_code = response_bytes[0]
+        address_code = response_bytes[1]
+        status_code = response_bytes[2]
+        data = response_bytes[3:4]
+        end_code = response_bytes[5]
+
+        if start_code != 0xCC or end_code != 0xDD:
+            return {'data': None, 'status': "Invalid start or end code"}
+
+        status_message = check_status_bit(status_code)
+        return {'message': data, 'status': status_message}
+    except Exception as e:
+        return {'message':f"{e}", 'status':'Server Error'}
+
 
 def get_change_addr_cmd(old, new):
     cmd = b'\xCC' + old + b'\x00\xFF\xEE\xBB\xAA' + new + b'\x00\x00\x00\xDD'
@@ -37,7 +81,7 @@ def switch_to_valve(addr, port_number):
     current_app.logger.debug(f"Called switch_to_valve({addr}, {port_number})")
     command = get_switch_port_cmd(addr, port_number)
     response = current_app.connection.send(command, immediate=True)
-    return {'status':'ok','message':response.hex()}
+    return parse_response(response)
 
 @aurora_valve.route("/change-addr", methods=["POST"])
 @extract_pman_args
@@ -47,4 +91,4 @@ def change_addr_api(old_addr, new_addr):
     new_addr = int(new_addr).to_bytes(1, "little")
     command = get_change_addr_cmd(old_addr, new_addr)
     response = current_app.connection.send(command, immediate=True)
-    return {'status':'ok','message':response.hex()}
+    return parse_response(response)
