@@ -50,7 +50,7 @@ def parse_response(response_bytes):
             return {'data': None, 'status': "Invalid start or end code"}
 
         status_message = check_status_bit(status_code)
-        return {'message': data, 'status': status_message}
+        return {'message': data.hex(), 'status': status_message}
     except Exception as e:
         return {'message':f"{e}", 'status':'Server Error'}
 
