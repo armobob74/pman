@@ -43,7 +43,7 @@ def parse_response(response_bytes):
         start_code = response_bytes[0]
         address_code = response_bytes[1]
         status_code = response_bytes[2]
-        data = response_bytes[3:4]
+        data = response_bytes[3:5]
         end_code = response_bytes[5]
 
         if start_code != 0xCC or end_code != 0xDD:
