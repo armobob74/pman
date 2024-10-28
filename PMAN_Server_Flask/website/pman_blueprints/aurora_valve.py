@@ -17,7 +17,7 @@ def check_status_bit(status_bit: bytes):
         b'\xFE': "Task is being executed: The received command is currently being processed.",
         b'\xFF': "Unknown error: An unidentified error has occurred."
     }
-    return status_dict.get(status_bit, "Invalid or unknown status bit.")
+    return status_dict.get(status_bit, f"Invalid or unknown status bit {status_bit}.")
 
 
 def cksum(b):
