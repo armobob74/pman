@@ -20,6 +20,7 @@ def check_status_bit(status_bit: int):
     return status_dict.get(status_bit, f"Invalid or unknown status bit {status_bit}.")
 
 
+
 def cksum(b):
     summation = sum(b)
     HB = (summation >> 8) & 0xFF  # Shift right by 8 bits and mask to get HB
@@ -92,3 +93,14 @@ def change_addr_api(old_addr, new_addr):
     command = get_change_addr_cmd(old_addr, new_addr)
     response = current_app.connection.send(command, immediate=True)
     return parse_response(response)
+
+@aurora_valve.get("/is-busy/<int:addr>")
+def isBusy(addr: int):
+    base_command = bytes([0xCC, int(addr), 0x4A, 0x00, 0x00, 0xDD])
+    command = base_command + cksum(base_command)
+    response = current_app.connection.send(command, immediate=True)
+    parsed_response = parse_response(response)
+    if parsed_response['status'] == "Motor busy: The motor is currently executing another task.":
+        return {'is-busy':True}
+    else:
+        return {'is-busy':False}
