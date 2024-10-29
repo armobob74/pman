@@ -100,7 +100,7 @@ def isBusy(addr: int):
     command = base_command + cksum(base_command)
     response = current_app.connection.send(command, immediate=True)
     parsed_response = parse_response(response)
-    if parsed_response['status'] == "error":
+    if 'error' in parsed_response['status'].lower():
         return {'is-busy':'error'}
     if parsed_response['status'] == "Motor busy: The motor is currently executing another task.":
         return {'is-busy':True}
