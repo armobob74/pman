@@ -6,7 +6,8 @@
   "blueprints":["aurora_valve"],
   "sidecards": [
 	  ["Switch to Port", "/aurora-valve/switch-to-port"],
-	  ["Change Address", "/aurora-valve/change-addr"]
+	  ["Change Address", "/aurora-valve/change-addr"],
+	  ["Probe Bus", "/aurora-valve/probe-bus"]
   ]
 
 }
