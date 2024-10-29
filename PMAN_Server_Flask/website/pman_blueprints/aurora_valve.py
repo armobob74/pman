@@ -102,6 +102,8 @@ def isBusy(addr: int):
     parsed_response = parse_response(response)
     if 'error' in parsed_response['status'].lower():
         return {'is-busy':'error'}
+    if 'invalid response' in parsed_response['status'].lower():
+        return {'is-busy':'error'}
     if parsed_response['status'] == "Motor busy: The motor is currently executing another task.":
         return {'is-busy':True}
     else:
