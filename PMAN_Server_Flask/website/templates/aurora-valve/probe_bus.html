@@ -1,0 +1,53 @@
+{% extends "layout.html" %} {% block head%}
+<style>
+#probes{
+	display:flex;
+	flex-direction:column;
+	gap:1em;
+}
+
+</style>
+{% endblock %} {% block content%}
+<h2>Probe Bus</h2>
+<div id="probes">
+  <div id="confirmed-addrs"></div>
+  <div id="current-test"></div>
+  <button type="button" onclick="probe()">probe</button>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+
+  async function addrExists(x) {
+    let response = await fetch(`/pman/aurora-valve/is-busy/${x}`);
+    let j = await response.json()
+    let s = j["is-busy"];
+    if (s == "error") {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+
+  let probes = document.getElementById('probes')
+  let confirmed_addrs = document.getElementById("confirmed-addrs")
+  let current_test = document.getElementById('current-test')
+
+  function confirmAddr(text){
+      const newDiv = document.createElement('div');
+      newDiv.textContent = text;
+      confirmed_addrs.appendChild(newDiv);
+  }
+
+
+  async function probe(){
+	  for(let i=0; i<0x7f; i++){
+	  	  current_test.textContent = i;
+		  if(await addrExists(i)){
+			  confirmAddr(i)
+		  }
+	  }
+  }
+
+</script>
+{% endblock%}

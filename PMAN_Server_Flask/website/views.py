@@ -39,6 +39,11 @@ def auroraValveSwitchToPort():
 def auroraValveChangeAddr():
     return render_template('aurora-valve/change_addr.html')
 
+@views.get('/aurora-valve/probe-bus')
+def auroraValveProbeBus():
+    """ Find out which addresses are on the bus """
+    return render_template('aurora-valve/probe_bus.html')
+
 @views.route('/aurora-pump/transfer')
 def auroraPumpTransfer():
     return render_template('aurora-pump/transfer.html')
