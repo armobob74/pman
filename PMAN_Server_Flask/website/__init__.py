@@ -6,6 +6,7 @@ from .pman_blueprints.release_scheduler import release_scheduler
 from .pman_blueprints.kamoer_dip_1500 import kamoer_peri
 from .pman_blueprints.dcdli import dcdli
 from .pman_blueprints.dcdli_v2 import dcdli_v2
+from .pman_blueprints.waveshare import waveshare
 
 from .views import views
 from flask import Flask, render_template

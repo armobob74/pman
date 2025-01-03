@@ -110,3 +110,10 @@ def dcdlV2Control():
     instrument_info = pman_config['instrument_info']
     relay_names = instrument_info['relays'].keys()
     return render_template('dcdli-v2/control.html', relay_names = enumerate(relay_names))
+
+@views.route('/waveshare/control')
+def waveshareControl():
+    pman_config = current_app.config['pman-config']
+    instrument_info = pman_config['instrument_info']
+    relays = instrument_info['relays']
+    return render_template('waveshare/control.html', TOTAL_RELAYS = relays)

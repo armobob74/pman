@@ -1,0 +1,12 @@
+{
+    "port": 5310,
+    "read_until": "\n",
+    "serial_port": "COM4",
+    "home_page": "/",
+    "blueprints": ["waveshare"],
+    "sidecards": [["Control", "/waveshare/control"]],
+    "instrument_info": {
+      "ID": 1,
+      "relays": 16
+    }
+}
