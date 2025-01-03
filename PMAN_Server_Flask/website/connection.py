@@ -4,6 +4,7 @@ from threading import Lock, Thread
 import serial
 from .modbus import ModbusRTU
 from serial.serialutil import SerialException
+from waveshare_relay_module import RelayModule as WaveshareRelayModule
 
 class MockSerial:
     """This class is used for manual testing when an actual serial connection does not exist"""
@@ -54,6 +55,7 @@ class Connection:
             print(f"### connected to port {serial_port} ###")
             self.is_live = True
             self.modbus = ModbusRTU(self.serial)
+            self.waveshare = WaveshareRelayModule(serial_port)
         except SerialException:
             print(f"### Could not open serial port {serial_port}, running in no-serial mode ###")
             self.serial = MockSerial()
