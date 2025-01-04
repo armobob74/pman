@@ -20,4 +20,4 @@ else:
     app_port = 5000
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=False, port=app_port)
+    app.run(host='0.0.0.0',debug=False, port=app_port,threaded=False)

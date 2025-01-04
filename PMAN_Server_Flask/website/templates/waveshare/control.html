@@ -36,6 +36,16 @@
     background-color: lightgreen;
   }
 
+  button.purple {
+    background-color: purple;
+    padding-left: 0.6em;
+    padding-right: 0.6em;
+  }
+
+  button.purple:hover {
+    background-color: violet;
+  }
+
   .footer {
     width: 100%;
     display: flex;
@@ -48,13 +58,15 @@
 {% endblock %}
 
 {% block content %}
+<h2>Warning: please don't have this page open while scheduler is running</h2>
+<h3>Also please don't have this page on multiple tabs or windows</h3>
 <div class="grid-container">
   {% for idx in range(1, TOTAL_RELAYS + 1) %}
   <div class="grid-item relay">
     Relay {{ idx }}
     <button class="error green" onclick="relayOn({{ idx }})">on</button>
     <button class="error" onclick="relayOff({{ idx }})">off</button>
-    <button class="error" onclick="toggleRelay({{ idx }})">toggle</button>
+    <button class="error purple" onclick="toggleRelay({{ idx }})">toggle</button>
   </div>
   {% endfor %}
 </div>

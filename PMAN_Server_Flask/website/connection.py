@@ -55,9 +55,10 @@ class Connection:
             print(f"### connected to port {serial_port} ###")
             self.is_live = True
             self.modbus = ModbusRTU(self.serial)
-            self.waveshare = WaveshareRelayModule(serial_port)
-        except SerialException:
+            self.waveshare = WaveshareRelayModule(self.serial)
+        except SerialException as e:
             print(f"### Could not open serial port {serial_port}, running in no-serial mode ###")
+            print(e)
             self.serial = MockSerial()
             self.is_live = False
         self.interrupt_flag = False
