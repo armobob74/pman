@@ -31,6 +31,6 @@ def toggle_channel(num):
 
 @waveshare.route("/all_status")
 def read_all():
-    r = current_app.connection.waveshare_relay_module.read_all_relays()
-    relay_status = {i+1:('On' if r[i] else 'Off') for i in range(len(r))}
+    rm = current_app.connection.waveshare_relay_module
+    relay_status = {i:('On' if rm.read_relay(i) else 'Off') for i in range(1,len(r)+1)}
     return relay_status
