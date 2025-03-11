@@ -31,6 +31,7 @@ def toggle_channel(num):
 
 @waveshare.route("/all_status")
 def read_all():
+    num_relays = current_app.config.get('pman_config', {}).get('instrument_info', {}).get('relays', 16)
     rm = current_app.connection.waveshare
-    relay_status = {i:('On' if rm.read_relay(i) else 'Off') for i in range(1,17)}
+    relay_status = {i:('On' if rm.read_relay(i) else 'Off') for i in range(1,num_relays+1)}
     return relay_status
